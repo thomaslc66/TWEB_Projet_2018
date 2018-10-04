@@ -25,25 +25,23 @@ function githubPromise(url) {
 }
 
 function getAllRepos(url, retour) {
-    var result;
+    let result;
 
     githubPromise(url)
-        .then(response => retour.)
+        .then(response => response.body);
     console.log(result);
 }
 
-function createNewJSON(response) {
-    const retour = {};
-    retour['login'] = response.login;
-    retour['name'] = response.name;
-    retour['avatar'] = response.avatar_url;
-    retour['repos'] = [];
-
-    githubPromise(response.url)
-        .then(respone)
-    getAllRepos(response.repos_url, retour);
-
-    return JSON.stringify(retour);
+function createNewJSON(user) {
+    return githubPromise(user.repos_url)
+        .then((repos) => {
+            const retour = {};
+            retour.login = user.login;
+            retour.name = user.name;
+            retour.avatar = user.avatar_url;
+            retour.repos = repos;
+            return retour;
+        });
 }
 
 /* get username JSON */
@@ -53,7 +51,8 @@ app.get('/user/:username', (req, res) => {
     url = `${url}users/${username}`;
 
     githubPromise(url)
-        .then(response => res.send(createNewJSON(response)));
+        .then(response => createNewJSON(response))
+        .then(retour => res.send(retour));
 });
 
 
