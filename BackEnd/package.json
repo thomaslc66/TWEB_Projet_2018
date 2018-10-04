@@ -6,9 +6,20 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thomaslc66/TWEB_Projet_2018.git"
+  },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "bugs": {
+    "url": "https://github.com/thomaslc66/TWEB_Projet_2018/issues"
+  },
+  "homepage": "https://github.com/thomaslc66/TWEB_Projet_2018#readme",
+  "dependencies": {
+    "mime": "^2.3.1",
+    "request": "^2.88.0"
+  },
   "devDependencies": {
     "eslint": "^5.6.1",
     "eslint-config-airbnb-base": "^13.1.0",
