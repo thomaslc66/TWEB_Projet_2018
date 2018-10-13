@@ -1,91 +1,42 @@
+require('dotenv').config();
+
 const express = require('express');
 
-const request = require('superagent');
+const MongoClient = require('mongodb').MongoClient;
+
+const Github = require('./src/Github');
+// const assert = require('assert');
+//const config = require('./src/config.js');
 
 const app = express();
 
-const config = require('./src/config.js');
+const port = process.env.PORT;
+console.log(port);
 
-const port = 9292;
+const dbUrl = 'mongodb://localhost:27017';
+
+const dbName = 'githubApi';
+
+const dbClient = new MongoClient(dbUrl);
+
+const client = new Github({ token: process.env.ACCESS_TOKEN });
 
 
-function githubPromise(url) {
-    return request
-        .get(url)
-        .auth(config.GITHUB_USER, config.ACCESS_TOKEN)
-        .set('Accept', 'application/vnd.github.v3+json')
-        .then((response) => {
-            if (response.statusCode === 200) {
-                // Send response in object Format
-                return response.body;
-            }
-            return null;
-        })
-        .catch((error) => { console.log('caught', error.message); });
-}
-
-function getUrl(url) {
-    return url.split('{')[0];
-}
-
-function createRepoJSON(url) {
-    return githubPromise(url)
-        .then((repo) => {
-            const urls = [];
-            const promises = urls.map(urlParam => githubPromise(urlParam));
-            return promises.all(promises)
-                .then((results) => {
-                    const [] = results;
-                    return {
-                        repo_name: repo.name,
-                    };
-                });
-        })
-        .catch(err => console.log(err));
-}
-
-function createUserJSON(url) {
-    return githubPromise(url)
-        .then((user) => {
-            const starred_url = getUrl(user.starred_url);
-            const gists_url = getUrl(user.gists_url);
-            const following_url = getUrl(user.following_url);
-            const urls = [user.repos_url, user.followers_url, following_url, gists_url[0], starred_url, user.subscriptions_url];
-            const promises = urls.map(urlParam => githubPromise(urlParam));
-            return Promise.all(promises)
-                .then((results) => {
-                    const [repositories, followers_, following_, gists_, starred_, subscriptions_] = results;
-                    return {
-                        type: user.type,
-                        id: user.id,
-                        creationDate: user.created_at,
-                        login: user.login,
-                        name: user.name,
-                        company: user.company,
-                        location: user.location,
-                        avatar: user.avatar_url,
-                        followersCount: user.followers,
-                        followers: followers_,
-                        followingCount: user.following,
-                        following: following_,
-                        numberOfPublicRepos: user.public_repos,
-                        repos: repositories,
-                        subscriptions: subscriptions_,
-                        numberOfGists: user.public_gists,
-                        gists: gists_,
-                        starredRepos: starred_,
-                    };
-                });
-        })
-        .catch(err => console.log(err));
-}
+// connection to MangoDB
+/* client.connect((err) => {
+    assert.equal(null, err);
+    console.log('Connected to DB => OK');
+    const dataBase = client.db(dbName);
+    client.close();
+});
+*/
 
 /* get username JSON */
 app.get('/user/:username', (req, res) => {
     const username = req.params.username;
-    const url = `${config.GITHUB_URL}users/${username}`;
+    const url = `${process.env.GITHUB_URL}users/${username}`;
 
-    createUserJSON(url)
+    client.createUserJSON(url)
         .then(result => res.send(result));
 });
 
@@ -93,9 +44,9 @@ app.get('/user/:username', (req, res) => {
 /* Get Repo JSON */
 app.get('/repo/:name', (req, res) => {
     const repo_name = req.params.name;
-    const url = `${config.GITHUB_URL}search/repositories?q=${name}`;
+    const url = `${process.env.GITHUB_URL}search/repositories?q=${name}`;
 
-    createRepoJSON(url)
+    client.createRepoJSON(url)
         .then(result => res.send(result));
 });
 
@@ -104,6 +55,21 @@ app.get('/', (req, resp) => {
 });
 
 
-const server = app.listen(port, () => {
-    console.log('Listening on %d', server.address().port);
+// 404 to Error Handler
+app.use((req, res, next) => {
+    const error = new Error('Not Found!');
+    error.status = 404;
+    next(error);
+});
+
+// Error Handler
+app.use((err, req, res) => {
+    console.error(err);
+    res.status(err.status || 500);
+    res.send(err.message);
+});
+
+
+app.listen(port, () => {
+    console.log(`Listening on http://localhost:${port}`);
 });

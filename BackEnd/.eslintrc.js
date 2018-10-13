@@ -20,6 +20,10 @@ module.exports = {
         "func-names": [
             "error", 
             "never"
-        ]
+        ],
+        "class-methods-use-this":[
+            "error",
+            "always"
+        ],
     }
 }
