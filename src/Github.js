@@ -56,34 +56,40 @@ class Github {
     }
 
     createRepoJSON(url) {
+        // TOTO can't call githubPromises because repo with same name are sended back from github in an array object
         return this.githubPromise(url)
             .then((repo) => {
-                const urls = [];
-                const promises = urls.map(urlParam => this.githubPromise(urlParam));
-                return promises.all(promises)
-                    .then((results) => {
-                        const [] = results;
-                        return {
-                            repo_name: repo.name,
-                        };
-                    });
+                if(repo.error === 1){
+                    console.log('Repository not found');
+                    return repo;
+                }else{
+                    const urls = [];
+                    const promises = urls.map(urlParam => this.githubPromise(urlParam));
+                    return Promise.all(promises)
+                        .then((results) => {
+                            const [] = results;
+                            return {
+                                repo_name: repo.name,
+                            };
+                        });
+                }
             })
             .catch(err => console.log(err));
     }
 
     /**
      * @function createUserJSON
-     * @global generate a JSON for api
+     * @global generate a JSON form api for a user
      * @param {*} url
      */
     createUserJSON(url) {
         return this.githubPromise(url)
             .then((user) => {
-                // TODO add a way to manage error
                 if(user.error === 1){
                     console.log('User not found');
                     return user;
                 }else{
+                    //check if user is already in db
                     const starred_url = this.getUrl(user.starred_url);
                     const gists_url = this.getUrl(user.gists_url);
                     const following_url = this.getUrl(user.following_url);
@@ -91,8 +97,11 @@ class Github {
                     const promises = urls.map(urlParam => this.githubPromise(urlParam));
                     return Promise.all(promises)
                         .then((results) => {
+                            // TODO modification of the Json results depending on the returned values
                             const [repositories, followers_, following_, gists_, starred_, subscriptions_] = results;
                             return {
+                                error: 0,
+                                queryDate: new Date(),
                                 type: user.type,
                                 id: user.id,
                                 creationDate: user.created_at,
@@ -102,15 +111,15 @@ class Github {
                                 location: user.location,
                                 avatar: user.avatar_url,
                                 followersCount: user.followers,
-                                followers: followers_,
+                                //followers: followers_,
                                 followingCount: user.following,
-                                following: following_,
+                                //following: following_,
                                 numberOfPublicRepos: user.public_repos,
-                                repos: repositories,
-                                subscriptions: subscriptions_,
+                                //repos: repositories,
+                                //subscriptions: subscriptions_,
                                 numberOfGists: user.public_gists,
-                                gists: gists_,
-                                starredRepos: starred_,
+                                //gists: gists_,
+                                //starredRepos: starred_,
                             };
                         });
                     }
@@ -124,11 +133,18 @@ class Github {
             });
     }
 
+    /**
+     * @description create and return a Json in case of error during api request
+     */
     createErrorJSON(){
         return {
             error: 1,
             text: "not found",
         }; 
+    }
+
+    requestUser(username){
+        // TODO create Method to check if user is in dataBase or not
     }
 
 }
