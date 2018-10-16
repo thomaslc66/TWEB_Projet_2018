@@ -1,17 +1,18 @@
 require('dotenv').config();
 
 const express = require('express');
-
+const assert = require('assert');
 const Github = require('./src/Github');
 const DataBase = require('./src/DataBase')
-const assert = require('assert');
 
 const app = express();
 const port = process.env.PORT;
+
 const db = new DataBase({});
 const client = new Github({ token: process.env.ACCESS_TOKEN });
 
-db.connect();
+//TODO Uncomment if you want to use the DB
+//db.connect();
 
 /* get username JSON */
 app.get('/user/:username', (req, res) => {
@@ -23,7 +24,7 @@ app.get('/user/:username', (req, res) => {
         .then((result) => {
             //db.userExists(result.login);
             if(result.error === 0){
-                db.addUser(result);  
+                //db.addUser(result);  
             }
             res.send(result);
         })
@@ -33,10 +34,13 @@ app.get('/user/:username', (req, res) => {
 });
 
 
-/* Get Repo JSON */
-app.get('/repo/:name', (req, res) => {
-    const repo_name = req.params.name;
-    const url = `${process.env.GITHUB_URL}search/repositories?q=${repo_name}`;
+/**
+ * Express route to ask for a repository
+ */
+app.get('/repo/:owner/:name', (req, res) => {
+    const repoName = req.params.name;
+    const owner = req.params.owner;
+    const url = `${process.env.GITHUB_URL}repos/${owner}/${repoName}`;
 
     client.createRepoJSON(url)
         .then((result) => {
@@ -47,8 +51,21 @@ app.get('/repo/:name', (req, res) => {
         });
 });
 
+/**
+ * Search for a repository when you don't know the user
+ */
+app.get('/repo/:name', (req, res) => {
+    const repo_name = req.params.name;
+    const url = `${process.env.GITHUB_URL}search/repositories?q=${repo_name}`;
+
+    client.createSearchResultJSON(url)
+        .then((result) => {
+            res.send(result)
+        });
+});
+
 app.get('/', (req, resp) => {
-    resp.send('hello world');
+    resp.send('{}');
 });
 
 
