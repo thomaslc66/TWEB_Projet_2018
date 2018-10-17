@@ -1,4 +1,4 @@
-if(process.env.NODE_MODE == 'development'){
+if(process.env.NODE_MODE === 'development'){
     require('dotenv').config();
 }
 const express = require('express');
