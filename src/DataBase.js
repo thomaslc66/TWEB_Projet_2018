@@ -4,7 +4,6 @@
 const Mongoose = require('mongoose');
 
 
-
 /**
  * @class DataBase
  * @description DataBase class is the class that is used to connect and manage the mongoDB DataBase
@@ -18,41 +17,24 @@ class DataBase {
     constructor({} = {}) {
         this.dbName = 'githubApi';
         this.dbUrl = 'mongodb://localhost:12345';
-        //this.client = new MongoClient(this.dbUrl);
-        this.data;
-        this.userSchema = new Mongoose.Schema({
-            error: Number,
-            queryDate: {type: Date, default: Date.now, required: false},
-            type: String,
-            id: Number,
-            creationDate: String,
-            login: String,
-            name: String,
-            company: String,
-            location: String,
-            avatar: String,
-            followersCount: Number,
-            followingCount: Number,
-            numberOfPublicRepos: Number,
-            numberOfGists: Number,
-            //_id: {type: String, required: false}
-        });
+        this.userSchema = this.createUserSchema();
+        this.cacheUserSchema = this.createCacheUserSchema();
         this.User = Mongoose.model('user', this.userSchema);
+        this.CacheUser = Mongoose.model('cacheUser', this.cacheUserSchema);
+        this.db;
         ;
     }
 
-
     connect(){
         Mongoose.connect(`${this.dbUrl}/${this.dbName}`);
-        const db = Mongoose.connection;
-        db.on('error', console.error.bind(console, 'connection error: '))
-        db.once('open', () => {
+        this.db = Mongoose.connection;
+        this.db.on('error', console.error.bind(console, 'connection error: '))
+        this.db.once('open', () => {
             console.log('Connected to DB => OK');
         });
     }
 
     addUser(user){
-        
         const dbUser = new this.User({
             error: user.error,
             queryDate: user.queryDate,
@@ -71,22 +53,87 @@ class DataBase {
             //_id: user._id
         });
 
+        const dbCacheUser = new this.CacheUser({
+            queryDate: user.queryDate,
+            login: user.login
+        });
+
         dbUser.save((err) => {
             if(err) throw err.message;
             //user is saved in db
             console.log('1 user added to db');
         });
 
+        dbCacheUser.save((err) => {
+            if(err) throw err.message;
+            console.log('1 user added to cache for next search');
+        });
+
     }
 
-    checkUser(){
+    createUserSchema(){
+        return new Mongoose.Schema({
+            error: Number,
+            queryDate: {type: Date, default: Date.now, required: false},
+            type: String,
+            id: Number,
+            creationDate: String,
+            login: String,
+            name: String,
+            company: String,
+            location: String,
+            avatar: String,
+            followersCount: Number,
+            followingCount: Number,
+            numberOfPublicRepos: Number,
+            numberOfGists: Number,
+            //_id: {type: String, required: false}
+        });
+    }
 
+    createCacheUserSchema(){
+        return new Mongoose.Schema({
+            queryDate: {type: Date, default: Date.now, required: false},
+            login: String
+        });
+    }
+
+    /**************************************************************
+     * 
+     * @description using mongoose query find if user exists and last time
+     * the request was made.
+     *************************************************************/
+    checkUser(login){
+        return this.CacheUser.findOne({login:`${login}`}, (err, user) => {
+            if(err) throw err
+
+            console.log(`${user.login} was founded in data base`)
+
+            let query = user.queryDate;
+            let lastRequestDelay = this.delay(query);
+            console.log(`La requête à été faite il y a ${lastRequestDelay} secondes`)
+            return true;
+        });
     }
 
     updateUser(){
 
     }
 
+    /************************
+     * TODO Ask how to return query like the defines User Schema ???
+     */
+    getUser(login){
+        return  this.User.findOne({login:`${login}`}, (err, user) => {
+            if(err) throw err
+            console.log(`${user.login} returned from -> DB`)
+            return user;
+        });
+    }
+
+    delay(queryDate){
+        return (new Date() - queryDate) / 1000;
+    }
 
     close(){
         this.client.close();

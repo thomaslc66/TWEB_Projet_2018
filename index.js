@@ -1,6 +1,7 @@
-if(process.env.NODE_MODE === 'development'){
+if(process.env.NODE_MODE !== 'production'){
     require('dotenv').config();
 }
+
 const express = require('express');
 const assert = require('assert');
 const Github = require('./src/Github');
@@ -13,31 +14,38 @@ const db = new DataBase({});
 const client = new Github({ token: process.env.ACCESS_TOKEN });
 
 //TODO Uncomment if you want to use the DB
-//db.connect();
+db.connect();
 
-/* get username JSON */
+/********************************************************
+ * Express route to ask for a user
+ ********************************************************/
 app.get('/user/:username', (req, res) => {
     const username = req.params.username;
     const url = `${process.env.GITHUB_URL}users/${username}`;
 
-    // call client.requestUser(username) to check if user exist in dataBase
-    client.createUserJSON(url)
+    //check if user is in dataBase
+    if(db.checkUser(username)){
+        //call to getUser -> from DataBase
+        res.send(db.getUser(username));
+    }else{
+        //call to createUserJson -> github Api
+        client.createUserJSON(url)
         .then((result) => {
-            //db.userExists(result.login);
             if(result.error === 0){
-                //db.addUser(result);  
+                db.addUser(result);  
             }
             res.send(result);
         })
         .catch((err) => {
             console.log(err);
         });
+    }
 });
 
 
-/**
+/********************************************************
  * Express route to ask for a repository
- */
+ ********************************************************/
 app.get('/repo/:owner/:name', (req, res) => {
     const repoName = req.params.name;
     const owner = req.params.owner;
@@ -52,9 +60,9 @@ app.get('/repo/:owner/:name', (req, res) => {
         });
 });
 
-/**
+/********************************************************
  * Search for a repository when you don't know the user
- */
+ ********************************************************/
 app.get('/repo/:name', (req, res) => {
     const repo_name = req.params.name;
     const url = `${process.env.GITHUB_URL}search/repositories?q=${repo_name}`;
@@ -65,19 +73,26 @@ app.get('/repo/:name', (req, res) => {
         });
 });
 
+/********************************************************
+ * Default route
+ ********************************************************/
 app.get('/', (req, resp) => {
     resp.send('{}');
 });
 
 
-// 404 to Error Handler
+/********************************************************
+ * Error when route not foud
+ ********************************************************/
 app.use((req, res, next) => {
-    const error = new Error('Not Found!');
+    const error = new Error('Route not Found!');
     error.status = 404;
     next(error);
 });
 
-// Error Handler
+/********************************************************
+ * Error Handler
+ ********************************************************/
 app.use((err, req, res) => {
     console.error(err);
     res.status(err.status || 500);
@@ -85,6 +100,9 @@ app.use((err, req, res) => {
 });
 
 
+/********************************************************
+ * app start 
+ ********************************************************/
 app.listen(port, () => {
     console.log(`Listening on http://localhost:${port}`);
 });
