@@ -1,5 +1,6 @@
-require('dotenv').config();
-
+if(process.env.NODE_MODE == 'development'){
+    require('dotenv').config();
+}
 const express = require('express');
 const assert = require('assert');
 const Github = require('./src/Github');
