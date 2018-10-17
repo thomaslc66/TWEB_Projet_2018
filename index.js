@@ -6,7 +6,7 @@ const Github = require('./src/Github');
 const DataBase = require('./src/DataBase')
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 const db = new DataBase({});
 const client = new Github({ token: process.env.ACCESS_TOKEN });
