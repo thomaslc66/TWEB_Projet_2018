@@ -18,9 +18,13 @@
   },
   "homepage": "https://github.com/thomaslc66/TWEB_Projet_2018#readme",
   "dependencies": {
-    "mime": "^2.3.1",
     "npm": "^6.4.1",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "express": "^4.16.4",
+    "superagent": "^4.0.0-beta.5",
+    "mongodb": "^3.1.8",
+    "mongodb-core": "^3.1.7",
+    "mongoose": "^5.3.3"
   },
   "devDependencies": {
     "assert": "^1.4.1",
