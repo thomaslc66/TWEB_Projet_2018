@@ -4,6 +4,7 @@ if(process.env.NODE_MODE !== 'production'){
 
 const express = require('express');
 const assert = require('assert');
+const cors = require('cors');
 
 const Github = require('./src/Github');
 const DataBase = require('./src/DataBase')
@@ -20,7 +21,7 @@ db.connect();
 /********************************************************
  * Express route to ask for a user
  ********************************************************/
-app.get('/user/:username', (req, res) => {
+app.get('/user/:username', cors(), (req, res) => {
     const username = req.params.username;
     const url = `${process.env.GITHUB_URL}users/${username}`;
 
