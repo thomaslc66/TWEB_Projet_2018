@@ -105,10 +105,11 @@ class Github {
                                 error: 0,
                                 repo_name: repo.name,
                                 owner_login: repo.owner.login,
-                                owner_avatar: repo.owner.avatar_url 
+                                owner_avatar: repo.owner.avatar_url,
+                                owner_url: repo.owner.html_url,
+                                fork_count: repo.fork_count,
                             };
                         });
-                    
                 }
             })
             .catch(err => {
@@ -133,8 +134,7 @@ class Github {
                 }else{
                     //multiple repositories
                     const result = [];
-                    const resultSize = repo.items.length;
-                
+               
                     repo.items.forEach(element => {
                         result.push({
                             fullname: element.full_name,
@@ -178,23 +178,23 @@ class Github {
                             const [repositories, followers_, following_, gists_, starred_, subscriptions_] = results;
                             return {
                                 error: 0,
-                                queryDate: new Date(),
+                                query_date: new Date(),
                                 type: user.type,
                                 id: user.id,
-                                creationDate: user.created_at,
+                                creation_date: user.created_at,
                                 login: user.login,
                                 name: user.name,
                                 company: user.company,
                                 location: user.location,
                                 avatar: user.avatar_url,
-                                followersCount: user.followers,
+                                followers_count: user.followers,
                                 //followers: followers_,
-                                followingCount: user.following,
+                                following_count: user.following,
                                 //following: following_,
-                                numberOfPublicRepos: user.public_repos,
-                                //repos: repositories,
+                                public_repos_number: user.public_repos,
+                                repos: repositories,
                                 //subscriptions: subscriptions_,
-                                numberOfGists: user.public_gists,
+                                gists_number: user.public_gists,
                                 //gists: gists_,
                                 //starredRepos: starred_,
                             };
