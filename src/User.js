@@ -1,44 +1,18 @@
 const Mongoose = require('mongoose');
 const Schema = Mongoose.Schema;
 
-const userSchema = new Schema({
-    error: Number,
-    queryDate: {type: Date, default: Date.now},
+const UserSchema = () => new Schema({
     type: String,
     id: Number,
-    creationDate: String,
+    creation_date: String,
     login: String,
     name: String,
     company: String,
     location: String,
     avatar: String,
-    followersCount: Number,
-    followingCount: Number,
-    numberOfPublicRepos: Number,
-    numberOfGists: Number,
-    _id: String
-});
-
-module.exports = DataBase;
-const Mongoose = require('mongoose');
-const Schema = Mongoose.Schema;
-
-const UserSchema = new Schema({
-    error: Number,
-    queryDate: {type: Date, default: Date.now, required: false},
-    type: String,
-    id: Number,
-    creationDate: String,
-    login: String,
-    name: String,
-    company: String,
-    location: String,
-    avatar: String,
-    followersCount: Number,
-    followingCount: Number,
-    numberOfPublicRepos: Number,
-    numberOfGists: Number,
-    //_id: {type: String, required: false}
+    followers_count: Number,
+    following_count: Number,
+    number_of_public_repos: Number,
 });
 
 module.exports = UserSchema;

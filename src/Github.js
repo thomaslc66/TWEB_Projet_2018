@@ -95,21 +95,33 @@ class Github {
                     console.log('Repository not found');
                     return repo;
                 }else{
-                    const urls = [];
+                    const releases_url = this.getUrl(user.releases_url);
+                    const urls = [repo.forks_url, releases_url];
                     const promises = urls.map(urlParam => this.githubPromise(urlParam));
                     return Promise.all(promises)
                         .then((results) => {
-                            const [] = results;
+                            const [forks_urls, releases_url] = results;
+                            const forks_url = forks_urls.map(forkUrl => {return forkUrl.html_url});
                             return {
                                 //add what you need to display
                                 error: 0,
-                                repo_name: repo.name,
+                                query_date: new Date(),
+                                id: repo.id,
+                                name: repo.name,
+                                html_url: repo.html_url,
                                 owner_login: repo.owner.login,
-                                owner_avatar: repo.owner.avatar_url,
-                                owner_url: repo.owner.html_url,
-                                fork_count: repo.fork_count,
+                                owner_html_url: repo.owner.html_url,            
+                                forks_count: repo.forks_count,
+                                forks_url: forks_url,
+                                watchers_count: repo.watchers_count,
+                                open_issues_count: repo.open_issues_count,
+                                creation_date: repo.created_at,
+                                last_update_ate: repo.updated_at,
+                                release_download_count: JSON.parse(releases_url).count,        
+                                company: repo.company,
                             };
                         });
+                    
                 }
             })
             .catch(err => {
@@ -222,54 +234,3 @@ class Github {
 }
 
 module.exports = Github;
-
-    /* -------------------------------- REPO PART --------------------------- */
-
-    /********************************************************
-     * @function createRepoJSON
-     * @global generate a JSON form api for a repository
-     * @param {*} url
-     * @returns Json Object with usefull repository information
-     ********************************************************/
-    createRepoJSON(url) {
-        // TODO can't call githubPromises because repo with same name are sended back from github in an array object
-        return this.githubPromise(url)
-            .then((repo) => {
-                if(repo.error === 1){
-                    console.log('Repository not found');
-                    return repo;
-                }else{
-                    const releases_url = this.getUrl(user.releases_url);
-                    const urls = [repo.forks_url, releases_url];
-                    const promises = urls.map(urlParam => this.githubPromise(urlParam));
-                    return Promise.all(promises)
-                        .then((results) => {
-                            const [forks_urls, releases_url] = results;
-                            const forks_url = forks_urls.map(forkUrl => {return forkUrl.html_url});
-                            return {
-                                //add what you need to display
-                                error: 0,
-                                query_date: new Date(),
-                                id: repo.id,
-                                name: repo.name,
-                                html_url: repo.html_url,
-                                owner_login: repo.owner.login,
-                                owner_html_url: repo.owner.html_url,            
-                                forks_count: repo.forks_count,
-                                forks_url: forks_url,
-                                watchers_count: repo.watchers_count,
-                                open_issues_count: repo.open_issues_count,
-                                creation_date: repo.created_at,
-                                last_update_ate: repo.updated_at,
-                                release_download_count: JSON.parse(releases_url).count,        
-                                company: repo.company,
-                            };
-                        });
-                    
-                }
-            })
-            .catch(err => {
-                console.log(err);
-                return this.createErrorJSON();
-            });
-    }
