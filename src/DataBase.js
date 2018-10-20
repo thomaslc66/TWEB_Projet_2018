@@ -314,3 +314,128 @@ class DataBase {
 }
 
 module.exports = DataBase;
+    /**************************************************************
+     * 
+     * @description User table
+     * 
+     *************************************************************/
+    addUser(user){
+        const dbUser = new this.User({
+            type: user.type,
+            id: user.id,
+            creation_date: user.creation_date,
+            login: user.login,
+            name: user.name,
+            company: user.company,
+            location: user.location,
+            avatar: user.avatar,
+            followers_count: user.followers_count,
+            following_count: user.following_count,
+            number_of_public_repos: user.number_of_public_repos,
+        });
+
+        const dbCacheUser = new this.CacheUser({
+            query_date: user.query_date,
+            login: user.login
+        });
+
+        dbUser.save((err) => {
+            if(err) throw err.message;
+            //user is saved in db
+            console.log('1 user added to db');
+        });
+
+        dbCacheUser.save((err) => {
+            if(err) throw err.message;
+            console.log('1 user added to cache for next search');
+        });
+
+    }
+
+    createUserSchema(){
+        return new Mongoose.Schema({
+            type: String,
+            id: Number,
+            creation_date: String,
+            login: String,
+            name: String,
+            company: String,
+            location: String,
+            avatar: String,
+            followers_count: Number,
+            following_count: Number,
+            number_of_public_repos: Number,
+        });
+    }
+
+    createCacheUserSchema(){
+        return new Mongoose.Schema({
+            query_date: {type: Date, default: Date.now, required: false},
+            id: Number,
+        });
+    }
+
+    /**************************************************************
+     * 
+     * @description Repo table
+     * 
+     *************************************************************/
+    addRepo(repo){
+        const dbRepo = new this.Repo({
+            id: repo.id,
+            name: repo.name,
+            html_url: repo.html_url,
+            owner_login: repo.owner_login,
+            owner_html_url: repo.owner_html_url,            
+            forks_count: repo.forks_count,
+            forks_url: repo.forks_url,
+            watchers_count: repo.watchers_count,
+            open_issues_count: repo.open_issues_count,
+            creation_date: repo.creation_date,
+            last_update_ate: repo.last_update_ate,
+            release_download_count: repo.release_download_count,         
+            company: repo.company,
+        });
+
+        const dbCacheRepo = new this.CacheRepo({
+            query_date: repo.query_date,
+            id: Number,
+        });
+
+        dbRepo.save((err) => {
+            if(err) throw err.message;
+            //user is saved in db
+            console.log('1 user added to db');
+        });
+
+        dbCacheRepo.save((err) => {
+            if(err) throw err.message;
+            console.log('1 user added to cache for next search');
+        });
+
+    }
+
+    createRepoSchema(){
+        return new Mongoose.Schema({
+            id: Number,
+            name: String,
+            html_url: String,
+            owner_login: String,
+            owner_html_url: String,            
+            forks_count: Number,
+            forks_url: String,
+            watchers_count: Number,
+            open_issues_count: Number,
+            creation_date: String,
+            last_update_ate: String,
+            release_download_count: Number,         
+            company: String,
+        });
+    }
+
+    createCacheRepoSchema(){
+        return new Mongoose.Schema({
+            query_date: {type: Date, default: Date.now, required: false},
+            id: Number,
+        });
+    }

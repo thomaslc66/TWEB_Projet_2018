@@ -20,3 +20,25 @@ const userSchema = new Schema({
 });
 
 module.exports = DataBase;
+const Mongoose = require('mongoose');
+const Schema = Mongoose.Schema;
+
+const UserSchema = new Schema({
+    error: Number,
+    queryDate: {type: Date, default: Date.now, required: false},
+    type: String,
+    id: Number,
+    creationDate: String,
+    login: String,
+    name: String,
+    company: String,
+    location: String,
+    avatar: String,
+    followersCount: Number,
+    followingCount: Number,
+    numberOfPublicRepos: Number,
+    numberOfGists: Number,
+    //_id: {type: String, required: false}
+});
+
+module.exports = UserSchema;
