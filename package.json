@@ -23,7 +23,7 @@
     "express": "^4.16.4",
     "mongodb": "^3.1.8",
     "mongodb-core": "^3.1.7",
-    "mongoose": "^5.3.3",
+    "mongoose": "4.13.11",
     "mongoose-float": "^1.0.2",
     "npm": "^6.4.1",
     "request": "^2.88.0",
