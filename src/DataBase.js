@@ -32,7 +32,6 @@ class DataBase {
         this.CacheUser = Mongoose.model('cacheUser', this.cacheUserSchema);
         this.Statistics = Mongoose.model('statistics', this.statisticsSchema);
         this.db;
-        ;
     }
 
     connect(){
@@ -44,79 +43,19 @@ class DataBase {
         });
     }
 
-    createUserSchema(){
-        return new Mongoose.Schema({
-            error: Number,
-            query_date: {type: Date, default: Date.now, required: false},
-            type: String,
-            id: Number,
-            creation_date: String,
-            login: String,
-            name: String,
-            company: String,
-            location: String,
-            avatar: String,
-            followers_count: Number,
-            following_count: Number,
-            public_repos_number: Number,
-            gists_number: Number,
-        });
-    }
-
-    createCacheUserSchema(){
-        return new Mongoose.Schema({
-            query_date: {type: Date, default: Date.now, required: false},
-            login: String,
-            id: Number
-        });
-    }
-
-    /**************************************
-     * Schema of the statistics value
-     *************************************/
-    createStatisticsSchema(){
-        return new Mongoose.Schema({
-            id: Number,
-            request_number: Number,
-            followers_sum: Number,
-            followers_mean: { type: Float },
-            followers_max: Number,
-            followers_min: Number
-        });
-    }
-
     /**************************************************************
      * 
-     * @function insertUser()
-     * @description construction and insertion of a user in DB
+     * @function delay()
+     * @description calculated the delay between 2 requests on the same user or repo
+     * @return return this delay
      * 
      *************************************************************/
-    insertUser(user){
-        const dbUser = new this.User({
-            error: user.error,
-            type: user.type,
-            id: user.id,
-            creationDate: user.creationDate,
-            login: user.login,
-            name: user.name,
-            company: user.company,
-            location: user.location,
-            avatar: user.avatar,
-            followersCount: user.followersCount,
-            followingCount: user.followersCount,
-            numberOfPublicRepos: user.numberOfPublicRepos,
-            numberOfGists: user.numberOfGists,
-        });
+    delay(queryDate){
+        return (new Date() - queryDate) / 1000;
+    }
 
-        const dbCacheUser = new this.CacheUser({
-            query_date: user.query_date,
-            login: user.login,
-            id: user.id
-        });
-
-        this.saveInDB(dbUser);
-        this.saveInDB(dbCacheUser);
-
+    close(){
+        this.client.close();
     }
 
     /**************************************************************
@@ -132,6 +71,78 @@ class DataBase {
         });
     }
 
+    /******************************************************************/
+    /**************************[USER]**********************************/
+    /******************************************************************/
+    createUserSchema(){
+        return new Mongoose.Schema({
+            type: String,
+            id: Number,
+            creation_date: String,
+            login: String,
+            name: String,
+            company: String,
+            location: String,
+            avatar: String,
+            followers_count: Number,
+            following_count: Number,
+            number_of_public_repos: Number,
+        });
+    }
+
+    createCacheUserSchema(){
+        return new Mongoose.Schema({
+            query_date: {type: Date, default: Date.now, required: false},
+            login: String,
+            id: Number
+        });
+    }
+    
+    /**************************************************************
+     * 
+     * @function insertUser()
+     * @description construction and insertion of a user in DB
+     * 
+     *************************************************************/
+    insertUser(user){
+        const dbUser = new this.User({
+            type: user.type,
+            id: user.id,
+            creation_date: user.creation_date,
+            login: user.login,
+            name: user.name,
+            company: user.company,
+            location: user.location,
+            avatar: user.avatar,
+            followers_count: user.followers_count,
+            following_count: user.following_count,
+            number_of_public_repos: user.number_of_public_repos,
+        });
+
+        const dbCacheUser = new this.CacheUser({
+            query_date: user.query_date,
+            login: user.login,
+            id: user.id
+        });
+
+        this.saveInDB(dbUser);
+        this.saveInDB(dbCacheUser);
+
+    }
+
+    /**************************************
+     * Schema of the statistics value
+     *************************************/
+    createStatisticsSchema(){
+        return new Mongoose.Schema({
+            id: Number,
+            request_number: Number,
+            followers_sum: Number,
+            followers_mean: { type: Float },
+            followers_max: Number,
+            followers_min: Number
+        });
+    }
 
     /**************************************************************
      * 
@@ -296,21 +307,67 @@ class DataBase {
             */
     }
 
-        /**************************************************************
+    /******************************************************************/
+    /**************************[REPO]**********************************/
+    /******************************************************************/
+    createRepoSchema(){
+        return new Mongoose.Schema({
+            id: Number,
+            name: String,
+            html_url: String,
+            owner_login: String,
+            owner_html_url: String,            
+            forks_count: Number,
+            forks_url: String,
+            watchers_count: Number,
+            open_issues_count: Number,
+            creation_date: String,
+            last_update_ate: String,
+            release_download_count: Number,         
+            company: String,
+        });
+    }
+
+    createCacheRepoSchema(){
+        return new Mongoose.Schema({
+            query_date: {type: Date, default: Date.now, required: false},
+            name: String,
+            id: Number,
+        });
+    }
+
+    /**************************************************************
      * 
-     * @function delay()
-     * @description calculated the delay between 2 requests on the same user or repo
-     * @return return this delay
+     * @function inserRepo()
+     * @description construction and insertion of a repo in DB
      * 
      *************************************************************/
-    delay(queryDate){
-        return (new Date() - queryDate) / 1000;
-    }
+    inserRepo(repo){
+        const dbRepo = new this.Repo({
+            id: repo.id,
+            name: repo.name,
+            html_url: repo.html_url,
+            owner_login: repo.owner_login,
+            owner_html_url: repo.owner_html_url,            
+            forks_count: repo.forks_count,
+            forks_url: repo.forks_url,
+            watchers_count: repo.watchers_count,
+            open_issues_count: repo.open_issues_count,
+            creation_date: repo.creation_date,
+            last_update_ate: repo.last_update_ate,
+            release_download_count: repo.release_download_count,         
+            company: repo.company,
+        });
 
-    close(){
-        this.client.close();
-    }
+        const dbCacheRepo = new this.CacheRepo({
+            query_date: repo.query_date,
+            name: repo.name,
+            id: Number,
+        });
 
+        this.saveInDB(dbRepo);
+        this.saveInDB(dbCacheRepo);
+    }
 }
 
 module.exports = DataBase;
