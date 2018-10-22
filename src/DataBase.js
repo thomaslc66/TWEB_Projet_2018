@@ -15,8 +15,8 @@ class DataBase {
      * @description - object constructor
      */
     constructor({} = {}) {
-        this.dbName = 'githubApi';
-        this.dbUrl = 'mongodb://localhost:12345';
+        this.dbName = process.env.DB_NAME || 'githubApi';;
+        this.dbUrl = process.env.DB_URL || 'mongodb://localhost:12345';
 
         // mongoose model
         this.userSchema = this.createUserSchema();

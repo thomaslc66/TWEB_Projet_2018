@@ -13,8 +13,8 @@ routes.get('/user/:username', (req, res) => {
     const username = req.params.username;
     const url = `${process.env.GITHUB_URL}users/${username}`;
 
-    // TODO create Controller
-db.searchUser(username)
+
+    db.searchUser(username)
         .then((user) => {
             if(user.error === 1){
                 // Two possibilities 
@@ -25,11 +25,6 @@ db.searchUser(username)
                 client.createUserJSON(url)
                     .then((userFromApi) => {
                         if(userFromApi.error === 0){
-                            /* TODO change this to only use findOneAndUpadate with the 
-                            user.findOneAndUpdate(
-                                {foo: 'bar'}, // find a document with that filter
-                                userFromApi, // document to insert when nothing was found
-                                {upsert: true, runValidators: true}, */
                             if(user.cache === true && user.update === true){
                                 db.updateUser(userFromApi);
                             }else{
