@@ -31,7 +31,7 @@ routes.get('/user/:username', (req, res) => {
                                 db.insertUser(userFromApi); 
                             }
                         }
-                        db.saveUserForStatistics(userFromApi);
+                        db.saveUserStatistics(userFromApi);
                         res.send(userFromApi);
                     })
                     .catch((err) => {
@@ -40,7 +40,7 @@ routes.get('/user/:username', (req, res) => {
                     });
             }
             else{
-                console.log("User parsed form DataBase");
+                console.log(`${user.login} parsed form DataBase`);
                 db.getUser(username)
                     .then((result) => {
                         res.send(result);
@@ -48,7 +48,7 @@ routes.get('/user/:username', (req, res) => {
             }
         })
         .catch((err) => {
-            console.log("BAhhhh.... Ca marche pas");
+            console.log('Shit happens...');
             client.createErrorJSON();
         });
 });

@@ -38,8 +38,9 @@ class Github {
     githubPromise(url) {
         return request
             .get(url)
-            .auth(process.env.GITHUB_USER, process.env.ACCESS_TOKEN)
+            //.auth(process.env.GITHUB_USER, process.env.ACCESS_TOKEN)
             .set('Accept', 'application/vnd.github.v3+json')
+            .set('Authorization', `token ${process.env.ACCESS_TOKEN}`)
             .then((response) => {
                 if (response.statusCode === 200) {
                     // Send response in object Format
