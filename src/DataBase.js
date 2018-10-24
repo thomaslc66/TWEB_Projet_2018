@@ -259,7 +259,7 @@ class DataBase {
      *************************************************************/
     saveUserStatistics(user){
         console.log('trying to save statistics');
-        const statFromDB = this.UserStatistics.findOne({id : 100})
+        this.UserStatistics.findOne({id : 100})
             .then((result) => {
                 let id;
                 let request_number;
@@ -384,7 +384,7 @@ class DataBase {
      *************************************************************/
     saveReposStatistics(repo){
         console.log('trying to save repos statistics');
-        const statFromDB = this.RepoStatistics.findOne({id : 200})
+        this.RepoStatistics.findOne({id : 200})
             .then((result) => {
                 let id;
                 let request_number;
@@ -411,8 +411,6 @@ class DataBase {
                     //save of the same object
                     this.saveInDB(result)
                 }
-
-
             });
     }
 }

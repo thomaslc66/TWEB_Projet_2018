@@ -89,14 +89,13 @@ class Github {
      * @returns Json Object with usefull repository information
      ********************************************************/
     createRepoJSON(url) {
-        // TODO can't call githubPromises because repo with same name are sended back from github in an array object
         return this.githubPromise(url)
             .then((repo) => {
                 if(repo.error === 1){
                     console.log('Repository not found');
                     return repo;
                 }else{
-                    const releases_url = this.getUrl(user.releases_url);
+                    const releases_url = this.getUrl(repo.releases_url);
                     const urls = [repo.forks_url, releases_url];
                     const promises = urls.map(urlParam => this.githubPromise(urlParam));
                     return Promise.all(promises)
@@ -138,7 +137,6 @@ class Github {
      * @returns Json Object with usefull repository information
      ********************************************************/
     createSearchResultJSON(url) {
-        // TODO can't call githubPromises because repo with same name are sended back from github in an array object
         return this.githubPromise(url)
             .then((repo) => {
                 if(repo.error === 1){
@@ -152,6 +150,7 @@ class Github {
                         result.push({
                             fullname: element.full_name,
                             user: element.owner.login,
+                            url: element.html_url,
                             language: element.language
                         });
                     });
