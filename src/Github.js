@@ -117,7 +117,7 @@ class Github {
                                 open_issues_count: repo.open_issues_count,
                                 creation_date: repo.created_at,
                                 last_update_ate: repo.updated_at,
-                                release_download_count: JSON.parse(releases_url).count,        
+                                release_download_count: 10,//JSON.parse(releases_url).count,        
                                 company: repo.company,
                             };
                         });
