@@ -1,15 +1,8 @@
-const chai = require("chai");
-
-const github = require("../src/Github.js");
-
-const { Github }  = github;
-
-chai.should();
-
 describe('Github.test.js', () => {
-    describe("Github", () => {
-        if("should allow create user", () => {
-            const github = new Github();
+    /*describe("Github", () => {
+        it("should allow create github", () => {
+            const client = new Github({ token: process.env.ACCESS_TOKEN });
+            client.should.not.be.undefined();
         });
-    });
+    });*/
 });

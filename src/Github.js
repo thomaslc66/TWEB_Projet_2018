@@ -23,7 +23,7 @@ class Github {
      * @param token - the token to the githubAPi 
      * @description - object constructor
      ***********************************************************/
-    constructor({ token} = {}) {
+    constructor({ token } = {}) {
         this.token = token;
     }
 

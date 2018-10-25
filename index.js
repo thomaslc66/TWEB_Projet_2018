@@ -3,10 +3,9 @@ if(process.env.NODE_MODE !== 'production'){
 }
 
 const express = require('express');
-const assert = require('assert');
 const cors = require('cors');
 
-const routes = require('./controllers/Route');
+const { routes, db } = require('./controllers/Route');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -55,6 +54,9 @@ app.use((err, req, res) => {
 /********************************************************
  * app start 
  ********************************************************/
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Listening on http://localhost:${port}`);
 });
+
+// Use for testing
+module.exports = { server, db };

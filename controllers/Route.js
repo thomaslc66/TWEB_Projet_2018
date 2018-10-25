@@ -13,7 +13,6 @@ routes.get('/user/:username', (req, res) => {
     const username = req.params.username;
     const url = `${process.env.GITHUB_URL}users/${username}`;
 
-    //db.connect();
 
     db.searchUser(username)
         .then((user) => {
@@ -31,36 +30,31 @@ routes.get('/user/:username', (req, res) => {
                             }else{
                                 db.insertUser(userFromApi); 
                             }
-                            db.saveUserStatistics(userFromApi)
+                            db.saveUserStatistics(userFromApi);                       
                         }
                         res.send(userFromApi);
                     })
                     .catch((err) => {
-                        console.log(err);
-                        res.send(client.createErrorJSON())
+                        res.send(client.createErrorJSON());                                       
                     });
             }
             else{
-                console.log(`${user.login} parsed form DataBase`);
                 db.getUser(username)
                     .then((result) => {
                         res.send(result);
-                    });
-            }
+                    })
+            }            
         })
         .catch((err) => {
-            console.log('Shit happens...');
-            client.createErrorJSON();
-            db.close();
+            res.send(client.createErrorJSON());
         });
 });
-
 
 routes.get('/repo/:owner/:name', (req, res) => {
     const repoName = req.params.name;
     const owner = req.params.owner;
     const url = `${process.env.GITHUB_URL}repos/${owner}/${repoName}`;
-
+    
     client.createRepoJSON(url)
         .then((result) => {
             // TODO if time add repositories value to the cache DB
@@ -68,7 +62,7 @@ routes.get('/repo/:owner/:name', (req, res) => {
             res.send(result)
         }).
         catch((err) =>{
-            client.createErrorJSON();
+            res.send(client.createErrorJSON());
         });
 });
 
@@ -81,13 +75,15 @@ routes.get('/repo/:name', (req, res) => {
             res.send(result)
         })
         .catch((err) => {
-            client.createErrorJSON();
+            res.send(client.createErrorJSON());
         })
 });
-
 
 routes.get('/', (req, resp) => {
     resp.send('{}');
 });
 
-module.exports = routes;
+module.exports = {
+    routes,
+    db
+};

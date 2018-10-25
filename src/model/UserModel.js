@@ -1,7 +1,7 @@
-const Mongoose = require('mongoose');
-const Schema = Mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const UserSchema = () => new Schema({
+let schema = new Schema({
     type: String,
     id: Number,
     creation_date: String,
@@ -13,6 +13,11 @@ const UserSchema = () => new Schema({
     followers_count: Number,
     following_count: Number,
     number_of_public_repos: Number,
+},
+{
+    toObject: {
+        virtuals: false
+    }
 });
-
-module.exports = UserSchema;
+ 
+module.exports = mongoose.model('user', schema);

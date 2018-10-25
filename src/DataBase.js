@@ -5,6 +5,13 @@ const Mongoose = require('mongoose');
 Mongoose.set('useFindAndModify', false);
 const CACHE_TIME = 100;
 
+const User = require("./model/UserModel.js")
+const CacheUser = require("./model/UserCacheModel.js")
+const UserStatistics = require("./model/UserModel.js")
+const Repo = require("./model/RepoModel")
+const CacheRepo = require("./model/RepoCacheModel")
+const RepoStatistics = require("./model/RepoStatisticsModel")
+
 /**
  * @class DataBase
  * @description DataBase class is the class that is used to connect and manage the mongoDB DataBase
@@ -18,23 +25,6 @@ class DataBase {
     constructor({} = {}) {
         this.dbName = process.env.DB_NAME;
         this.dbUrl = process.env.NODE_MODE !== 'production' ?  'mongodb://localhost:12345' : process.env.DB_URL;
-
-        // mongoose model
-        this.userSchema = this.createUserSchema();
-        this.cacheUserSchema = this.createCacheUserSchema();
-        this.userStatisticsSchema = this.createUserStatisticsSchema();
-        this.repoStatisticsSchema = this.createRepoStatisticsSchema();
-
-        //mongoose schema
-        this.userSchema.set('toObject', {virtuals: false});
-        this.cacheUserSchema.set('toObject', {virtuals: false});
-        this.userStatisticsSchema.set('toObject', {virtuals: false});
-        this.repoStatisticsSchema.set('toObject', {virtuals: false});
-
-        this.User = Mongoose.model('user', this.userSchema);
-        this.CacheUser = Mongoose.model('cacheUser', this.cacheUserSchema);
-        this.UserStatistics = Mongoose.model('userStatistics', this.userStatisticsSchema);
-        this.RepoStatistics = Mongoose.model('repoStatistics', this.repoStatisticsSchema);
         this.db;
     }
 
@@ -61,8 +51,12 @@ class DataBase {
     close(){
         Mongoose.connection.close();
         this.db.once('close', () => {
-            console.log('Disconnected from DB => OK');
+            console.log('Disconnected from DB');
         });
+    }
+
+    clear() {
+        Mongoose.connection.dropDatabase();
     }
 
     /**************************************************************
@@ -74,50 +68,10 @@ class DataBase {
     saveInDB(value){
         value.save((err) => {
             if(err) throw err.message;
-            console.log('Value save in DB -> OK');
+            console.log('Value saved');
         });
     }
 
-    /******************************************************************/
-    /**************************[USER]**********************************/
-    /******************************************************************/
-    createUserSchema(){
-        return new Mongoose.Schema({
-            type: String,
-            id: Number,
-            creation_date: String,
-            login: String,
-            name: String,
-            company: String,
-            location: String,
-            avatar: String,
-            followers_count: Number,
-            following_count: Number,
-            number_of_public_repos: Number,
-        });
-    }
-
-    createCacheUserSchema(){
-        return new Mongoose.Schema({
-            query_date: {type: Date, default: Date.now, required: false},
-            login: String,
-            id: Number
-        });
-    }
-
-    /**************************************
-     * Schema of the statistics value for all users
-     *************************************/
-    createUserStatisticsSchema(){
-        return new Mongoose.Schema({
-            id: Number,
-            request_number: Number,
-            followers_sum: Number,
-            followers_max: Number,
-            followers_min: Number
-        });
-    }
-    
     /**************************************************************
      * 
      * @function insertUser()
@@ -125,7 +79,7 @@ class DataBase {
      * 
      *************************************************************/
     insertUser(user){
-        const dbUser = new this.User({
+        const dbUser = new User({
             type: user.type,
             id: user.id,
             creation_date: user.creation_date,
@@ -139,7 +93,7 @@ class DataBase {
             number_of_public_repos: user.number_of_public_repos,
         });
 
-        const dbCacheUser = new this.CacheUser({
+        const dbCacheUser = new CacheUser({
             query_date: user.query_date,
             login: user.login,
             id: user.id
@@ -158,7 +112,7 @@ class DataBase {
      * 
      *************************************************************/
     getCachedUser(login){
-        return this.CacheUser.findOne({login})
+        return CacheUser.findOne({login})
             .then(cachedUser => {
                 if(cachedUser == null){
                     //user not find return null
@@ -221,7 +175,7 @@ class DataBase {
      * 
      *************************************************************/
     getUser(login){
-        return this.User.findOne({login})
+        return User.findOne({login})
                             .then((dbUser) => {
                                 // can dbUser be null?
                                 return dbUser.toObject();
@@ -239,13 +193,13 @@ class DataBase {
      * 
      *************************************************************/
     updateUser(user){
-        this.User.findOneAndUpdate({id: user.id}, user , {runValidators: true}, (err, result) => {
+        User.findOneAndUpdate({id: user.id}, user , {runValidators: true}, (err, result) => {
             if(err){
                 console.log(`Error during update of user ${user.login}`);
             }else{
                 console.log(`Update of user ${user.login}`);
                 // TODO Update queryDate of cached user
-                this.CacheUser.findOneAndUpdate({id: user.id}, {query_date: new Date}, {runValidators: true}, (err, result) => {
+                CacheUser.findOneAndUpdate({id: user.id}, {query_date: new Date}, {runValidators: true}, (err, result) => {
                     if(err){
                         console.log(`Error during cache update ${err.message}`);
                     }
@@ -262,7 +216,7 @@ class DataBase {
      *************************************************************/
     saveUserStatistics(user){
         console.log('trying to save statistics');
-        this.UserStatistics.findOne({id : 100})
+        UserStatistics.findOne({id : 100})
             .then((result) => {
                 let id;
                 let request_number;
@@ -278,7 +232,7 @@ class DataBase {
                     followers_max = user.followers_count;
                     followers_min = user.followers_count;
 
-                    const user_stats = new this.UserStatistics({
+                    const user_stats = new UserStatistics({
                         id: id,
                         request_number: request_number,
                         followers_sum: followers_sum,
@@ -299,49 +253,9 @@ class DataBase {
                     console.log("Statistics Saved");
 
                 }
-                //this.close();
+
+
             });
-    }
-
-
-    /******************************************************************/
-    /**************************[REPO]**********************************/
-    /******************************************************************/
-    createRepoSchema(){
-        return new Mongoose.Schema({
-            id: Number,
-            name: String,
-            html_url: String,
-            owner_login: String,
-            owner_html_url: String,            
-            forks_count: Number,
-            forks_url: String,
-            watchers_count: Number,
-            open_issues_count: Number,
-            creation_date: String,
-            last_update_ate: String,
-            release_download_count: Number,         
-            company: String,
-        });
-    }
-
-    createCacheRepoSchema(){
-        return new Mongoose.Schema({
-            query_date: {type: Date, default: Date.now, required: false},
-            name: String,
-            id: Number,
-        });
-    }
-
-    /**************************************
-     * Schema of the statistics value for all repos
-     *************************************/
-    createRepoStatisticsSchema(){
-        return new Mongoose.Schema({
-            id: Number,
-            request_number: Number,
-            fork_number: Number,
-        });
     }
 
     /**************************************************************
@@ -351,7 +265,7 @@ class DataBase {
      * 
      *************************************************************/
     inserRepo(repo){
-        const dbRepo = new this.Repo({
+        const dbRepo = new Repo({
             id: repo.id,
             name: repo.name,
             html_url: repo.html_url,
@@ -367,7 +281,7 @@ class DataBase {
             company: repo.company,
         });
 
-        const dbCacheRepo = new this.CacheRepo({
+        const dbCacheRepo = new sCacheRepo({
             query_date: repo.query_date,
             name: repo.name,
             id: Number,
@@ -388,7 +302,7 @@ class DataBase {
      *************************************************************/
     saveReposStatistics(repo){
         console.log('trying to save repos statistics');
-        this.RepoStatistics.findOne({id : 200})
+        RepoStatistics.findOne({id : 200})
             .then((result) => {
                 let id;
                 let request_number;
@@ -400,7 +314,7 @@ class DataBase {
                     request_number = 0;
                     fork_number = 0;
 
-                    const repo_stats = new this.RepoStatistics({
+                    const repo_stats = new RepoStatistics({
                         id: id,
                         fork_number: fork_number,
                         request_number: request_number
@@ -418,12 +332,5 @@ class DataBase {
             });
     }
 }
-
-
-
-
-
-
-
 
 module.exports = DataBase;
