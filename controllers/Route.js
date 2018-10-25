@@ -27,11 +27,10 @@ routes.get('/user/:username', (req, res) => {
                         if(userFromApi.error === 0){
                             if(user.cache === true && user.update === true){
                                 db.updateUser(userFromApi);
-                                db.saveUserStatistics(userFromApi);
                             }else{
                                 db.insertUser(userFromApi); 
-                                db.saveUserStatistics(userFromApi);
                             }
+                            db.saveUserStatistics(userFromApi);
                         }
                         res.send(userFromApi);
                     })
