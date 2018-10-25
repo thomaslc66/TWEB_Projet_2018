@@ -221,16 +221,6 @@ class Github {
                 });
             });
     }
-
-    /********************************************************
-     * @function requestUser
-     * @global ask the DB if user exists
-     * @param {*} username
-     ********************************************************/
-    requestUser(username){
-        // TODO create Method to check if user is in dataBase or not
-    }
-
 }
 
 module.exports = Github;

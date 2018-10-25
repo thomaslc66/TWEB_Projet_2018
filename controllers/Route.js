@@ -13,6 +13,7 @@ routes.get('/user/:username', (req, res) => {
     const username = req.params.username;
     const url = `${process.env.GITHUB_URL}users/${username}`;
 
+    //db.connect();
 
     db.searchUser(username)
         .then((user) => {
@@ -30,7 +31,7 @@ routes.get('/user/:username', (req, res) => {
                             }else{
                                 db.insertUser(userFromApi); 
                             }
-                            db.saveUserStatistics(userFromApi);
+                            db.saveUserStatistics(userFromApi)
                         }
                         res.send(userFromApi);
                     })
@@ -50,6 +51,7 @@ routes.get('/user/:username', (req, res) => {
         .catch((err) => {
             console.log('Shit happens...');
             client.createErrorJSON();
+            db.close();
         });
 });
 
@@ -61,9 +63,7 @@ routes.get('/repo/:owner/:name', (req, res) => {
 
     client.createRepoJSON(url)
         .then((result) => {
-            // connection to MangoDB
-            //db.connect();
-            //db.addUser(result);
+            // TODO if time add repositories value to the cache DB
             // TODO need to send value to db.saveReposStatistics(result)
             res.send(result)
         }).

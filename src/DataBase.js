@@ -16,8 +16,8 @@ class DataBase {
      * @description - object constructor
      */
     constructor({} = {}) {
-        this.dbName = process.env.DB_NAME || 'githubApi';;
-        this.dbUrl = process.env.DB_URL || 'mongodb://localhost:12345';
+        this.dbName = process.env.DB_NAME;
+        this.dbUrl = process.env.NODE_MODE !== 'production' ?  'mongodb://localhost:12345' : process.env.DB_URL;
 
         // mongoose model
         this.userSchema = this.createUserSchema();
@@ -59,7 +59,10 @@ class DataBase {
     }
 
     close(){
-        this.client.close();
+        Mongoose.connection.close();
+        this.db.once('close', () => {
+            console.log('Disconnected from DB => OK');
+        });
     }
 
     /**************************************************************
@@ -71,7 +74,7 @@ class DataBase {
     saveInDB(value){
         value.save((err) => {
             if(err) throw err.message;
-            console.log('Access to DB -> OK');
+            console.log('Value save in DB -> OK');
         });
     }
 
@@ -282,9 +285,9 @@ class DataBase {
                         followers_max: followers_max,
                         followers_min: followers_min
                     }); 
-    
                     //first save of the schema
-                    this.saveInDB(user_stats);
+                    this.saveInDB(user_stats)
+                    console.log("Statistics Saved");
                 }else{
                     result.request_number = result.request_number + 1;
                     result.followers_sum  = result.followers_sum + user.followers_count;
@@ -292,10 +295,11 @@ class DataBase {
                     result.followers_min = result.followers_min > user.followers_count ? user.followers_count : result.followers_min;
 
                     //save of the same object
-                    this.saveInDB(result)
+                    this.saveInDB(result)             
+                    console.log("Statistics Saved");
+
                 }
-
-
+                //this.close();
             });
     }
 
