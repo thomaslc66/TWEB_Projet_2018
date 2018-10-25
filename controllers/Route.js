@@ -27,11 +27,12 @@ routes.get('/user/:username', (req, res) => {
                         if(userFromApi.error === 0){
                             if(user.cache === true && user.update === true){
                                 db.updateUser(userFromApi);
+                                db.saveUserStatistics(userFromApi);
                             }else{
                                 db.insertUser(userFromApi); 
+                                db.saveUserStatistics(userFromApi);
                             }
                         }
-                        db.saveUserStatistics(userFromApi);
                         res.send(userFromApi);
                     })
                     .catch((err) => {
@@ -64,6 +65,7 @@ routes.get('/repo/:owner/:name', (req, res) => {
             // connection to MangoDB
             //db.connect();
             //db.addUser(result);
+            // TODO need to send value to db.saveReposStatistics(result)
             res.send(result)
         }).
         catch((err) =>{
