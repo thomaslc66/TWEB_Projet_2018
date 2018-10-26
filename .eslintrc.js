@@ -14,7 +14,7 @@ module.exports = {
             "single"
         ],
         "semi": [
-            "error",
+            1,
             "always"
         ],
         "func-names": [

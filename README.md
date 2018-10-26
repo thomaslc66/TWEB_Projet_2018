@@ -13,13 +13,13 @@ Create a .env file in the root directory and add the following configuration
 (You must install dotenv Visual Studio Code plugin)
 
 ```{java}
-PORT=3000
-GITHUB_KEY=github_key
-GITHUB_SECRET=github_secret
-ACCESS_TOKEN=access_token
-GITHUB_URL=https://api.github.com/
-GITHUB_USER=user
-NODE_MODE=developement
+PORT='3000'
+GITHUB_KEY='github_key'
+GITHUB_SECRET='github_secret'
+ACCESS_TOKEN='access_token'
+GITHUB_URL='https://api.github.com/'
+GITHUB_USER='user'
+NODE_MODE='developement'
 ```
 
 [Generate Tocken](https://blog.github.com/2013-05-16-personal-api-tokens/)

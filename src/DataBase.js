@@ -91,6 +91,8 @@ class DataBase {
             followers_count: user.followers_count,
             following_count: user.following_count,
             number_of_public_repos: user.number_of_public_repos,
+            five_best_repo: user.five_best_repo,
+            language_used: user.language_used
         });
 
         const dbCacheUser = new CacheUser({

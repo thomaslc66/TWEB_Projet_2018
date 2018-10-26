@@ -12,7 +12,9 @@ let schema = new Schema({
     avatar: String,
     followers_count: Number,
     following_count: Number,
+    five_best_repo: Object,
     number_of_public_repos: Number,
+    language_used: Object,
 },
 {
     toObject: {

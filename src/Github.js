@@ -102,6 +102,8 @@ class Github {
                         .then((results) => {
                             const [forks_urls, releases_url] = results;
                             const forks_url = forks_urls.map(forkUrl => {return forkUrl.html_url});
+                            const release_url = releases_url.map(releaseUrl => {return releaseUrl.assets[0].download_count});
+                            const total_realse_download = release_url.reduce((accumulator, currentValue) => accumulator + currentValue);
                             return {
                                 //add what you need to display
                                 error: 0,
@@ -117,7 +119,7 @@ class Github {
                                 open_issues_count: repo.open_issues_count,
                                 creation_date: repo.created_at,
                                 last_update_ate: repo.updated_at,
-                                release_download_count: 10,//JSON.parse(releases_url).count,        
+                                release_download_count: total_realse_download,        
                                 company: repo.company,
                             };
                         });
@@ -188,6 +190,27 @@ class Github {
                         .then((results) => {
                             // TODO modification of the Json results depending on the returned values
                             const [repositories, followers_, following_, gists_, starred_, subscriptions_] = results;
+                            const five_best_repo = repositories.map(repo => 
+                                ({
+                                    repo_name : repo.name,
+                                    repo_url : repo.url,
+                                    watchers_count : repo.watchers_count,
+                                    stars_count : repo.stargazers_count,
+                                    forks_count : repo.forks_count
+                                })
+                            )
+                            // Use || to sort by multiple properties to have sort.thenSortBy effect
+                            .sort((a, b) => {
+                                return b.watchers_count - a.watchers_count || b.forks_count - a.forks_count || b.stars_count - a.stars_count;
+                            })
+                            .slice(0, 5);
+
+                            // Count number of different language repositories
+                            const language_used = repositories.reduce((prev, curr) =>  {
+                                prev[curr.language] = (prev[curr.language] || 0) + 1;
+                                return prev;
+                            }, {});
+
                             return {
                                 error: 0,
                                 query_date: new Date(),
@@ -204,9 +227,11 @@ class Github {
                                 following_count: user.following,
                                 //following: following_,
                                 public_repos_number: user.public_repos,
-                                repos: repositories,
+                                //repos: repositories,
+                                five_best_repo : five_best_repo,
+                                language_used : language_used,
                                 //subscriptions: subscriptions_,
-                                gists_number: user.public_gists,
+                                //gists_number: user.public_gists,
                                 //gists: gists_,
                                 //starredRepos: starred_,
                             };
