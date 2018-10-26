@@ -51,32 +51,27 @@ describe("Database.test.js", () => {
             done();
         });
 
-        describe('Can insert/get user and cache user', () => {
-            it('Can insert/get user and cache user', (done) => {                
-                db.insertUser(user);
+        it('Can insert/get user and cache user', (done) => {                
+            db.insertUser(user);
 
-                const dbUserPromise = db.getUser(user.login)
-                .then((result) => {
-                    expect(result).to.be.deep.equal(user);
+            db.getUser(user.login)
+                .then((userResult) => {
+                    expect(userResult).to.be.deep.equal(user);
                 })
                 .catch((err) => {
-                    console.log(err);                                     
+                    done(new Error(err));                           
                 });
 
-                const dbUserCachePromise = db.getCachedUser(user.login)
-                .then((result) => {          
-                    expect(result.id).to.be.deep.equal(user.id);
-                    expect(result.login).to.be.deep.equal(user.login);
+            db.getCachedUser(user.login)
+                .then((userCacheResult) => {          
+                    expect(userCacheResult.id).to.be.deep.equal(user.id);
+                    expect(userCacheResult.login).to.be.deep.equal(user.login);
                 })
                 .catch((err) => {
-                    console.log(err);                                     
+                    done(new Error(err));                           
                 });
 
-                Promise.all([dbUserPromise, dbUserCachePromise])
-                    .then(() => {
-                        done();
-                    });
-            }).timeout(10000);
-        });
+            done();
+        }).timeout(10000);
     });
 });

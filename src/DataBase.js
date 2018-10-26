@@ -65,7 +65,7 @@ class DataBase {
      * @description save the value in DB
      * 
      ******************************************************************/
-    saveInDB(value){
+    saveInDB(value){    
         value.save((err) => {
             if(err) throw err.message;
             console.log('Value saved');
