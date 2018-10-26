@@ -1,89 +1,66 @@
-const routes = require('express').Router();
+const routes = require("express").Router();
 
-const Github = require('./../src/Github');
-const DataBase = require('./../src/DataBase');
+const Github = require("./../src/Github");
+const DataBase = require("./../src/DataBase");
 
 const db = new DataBase({});
 const client = new Github({ token: process.env.ACCESS_TOKEN });
 
-db.connect();
+/* istanbul ignore if  */
+if (process.env.NODE_MODE !== "test") {
+  db.connect();
+}
 
 /********************** Routes ************************* */
-routes.get('/user/:username', (req, res) => {
-    const username = req.params.username;
-    const url = `${process.env.GITHUB_URL}users/${username}`;
+routes.get("/user/:username", (req, res) => {
+  const username = req.params.username;
+  const url = `${process.env.GITHUB_URL}users/${username}`;
 
+  db.searchUser(username)
+    .then(user => {
+      // Test in Database.test.js
+      /* istanbul ignore else  */
+      if (user.error === 1) {
+        // Two possibilities
+        // 1) user is in Db with old cache -> update
+        // 2) user is not in db -> insert
 
-    db.searchUser(username)
-        .then((user) => {
-            if(user.error === 1){
-                // Two possibilities 
-                // 1) user is in Db with old cache -> update
-                // 2) user is not in db -> insert
-
-                // call to github API
-                client.createUserJSON(url)
-                    .then((userFromApi) => {
-                        if(userFromApi.error === 0){
-                            if(user.cache === true && user.update === true){
-                                db.updateUser(userFromApi);
-                            }else{
-                                db.insertUser(userFromApi); 
-                            }
-                            db.saveUserStatistics(userFromApi);                       
-                        }
-                        res.send(userFromApi);
-                    })
-                    .catch((err) => {
-                        res.send(client.createErrorJSON());                                       
-                    });
+        // call to github API
+        client
+          .createUserJSON(url)
+          .then(userFromApi => {
+            if (userFromApi.error === 0) {
+              // Test in Database.test.js
+              /* istanbul ignore if  */
+              if (user.cache === true && user.update === true) {
+                db.updateUser(userFromApi);
+              } else {
+                db.insertUser(userFromApi);
+              }
             }
-            else{
-                db.getUser(username)
-                    .then((result) => {
-                        res.send(result);
-                    })
-            }            
-        })
-        .catch((err) => {
+            res.send(userFromApi);
+          })
+          .catch(err => {
+            /* istanbul ignore next */
             res.send(client.createErrorJSON());
+          });
+      } else {
+        db.getUser(username).then(result => {
+          res.send(result);
         });
+      }
+    })
+    .catch(err => {
+      /* istanbul ignore next */
+      res.send(client.createErrorJSON());
+    });
 });
 
-routes.get('/repo/:owner/:name', (req, res) => {
-    const repoName = req.params.name;
-    const owner = req.params.owner;
-    const url = `${process.env.GITHUB_URL}repos/${owner}/${repoName}`;
-    
-    client.createRepoJSON(url)
-        .then((result) => {
-            // TODO if time add repositories value to the cache DB
-            // TODO need to send value to db.saveReposStatistics(result)
-            res.send(result)
-        }).
-        catch((err) =>{
-            res.send(client.createErrorJSON());
-        });
-});
-
-routes.get('/repo/:name', (req, res) => {
-    const repo_name = req.params.name;
-    const url = `${process.env.GITHUB_URL}search/repositories?q=${repo_name}`;
-
-    client.createSearchResultJSON(url)
-        .then((result) => {
-            res.send(result)
-        })
-        .catch((err) => {
-            res.send(client.createErrorJSON());
-        })
-});
-
-routes.get('/', (req, resp) => {
-    resp.send('{}');
+routes.get("/", (req, resp) => {
+  resp.send("{}");
 });
 
 module.exports = {
-    routes,
-    db
+  routes,
+  db
 };

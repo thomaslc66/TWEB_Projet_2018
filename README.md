@@ -27,7 +27,19 @@ GITHUB_KEY : Github public key
 GITHUB_SECRET : Github secret key
 ACCESS_TOKEN : Github tocken
 GITHUB_USER : Github user
-NODE_MODE : Value "developement" or "production"
+NODE_MODE : Value "test, "developement" or "production"
+
+Add this option to VSCode User Setting json
+
+```{json}
+  "workbench.iconTheme": "vscode-icons",
+  "editor.formatOnSave": true,
+  "eslint.autoFixOnSave": true,
+  "eslint.alwaysShowStatus": true,
+  "prettier.eslintIntegration": true,
+  "prettier.disableLanguages": ["js"],
+  "files.autoSave": "onFocusChange"
+```
 
 ## Run server
 

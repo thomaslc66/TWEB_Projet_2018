@@ -1,78 +1,135 @@
-// Use to test index.test.js before Database
-// Because there are conflict with db connections
-require("./index.test.js")
-
-let chai = require('chai');
-const dirtyChai = require('dirty-chai');
-const expect = chai.expect
+require("./index.test");
+const chai = require("chai");
+const dirtyChai = require("dirty-chai");
+const expect = chai.expect;
 
 chai.use(dirtyChai);
 
-const DataBase = require('../src/DataBase');
+const DataBase = require("../src/DataBase");
 
-let db = new DataBase({});
+const db = new DataBase({});
 
 const user = {
-    type: "User",
-    id: 25,
-    creation_date: "2017-03-21T14:56:48Z",
-    login: "test",
-    name: "testman",
-    company: "testandco",
-    location: "nowhere",
-    avatar: "https://noavatar.com",
-    followers_count: 8,
-    following_count: 5,
-    number_of_public_repos: 12,
-    five_best_repo: "" //TODO MBD
+  type: "User",
+  id: 25,
+  creation_date: "2017-03-21T14:56:48Z",
+  login: "test",
+  name: "testman",
+  company: "testandco",
+  location: "nowhere",
+  avatar: "https://noavatar.com",
+  followers_count: 8,
+  following_count: 5,
+  number_of_public_repos: 12,
+  five_best_repo: [
+    {
+      repo_name: "Repo 01",
+      repo_url: "https://nowhere1.com",
+      watchers_count: 10,
+      stars_count: 10,
+      forks_count: 10
+    },
+    {
+      repo_name: "Repo 02",
+      repo_url: "https://nowhere2.com",
+      watchers_count: 8,
+      stars_count: 8,
+      forks_count: 8
+    },
+    {
+      repo_name: "Repo 03",
+      repo_url: "https://nowhere3.com",
+      watchers_count: 6,
+      stars_count: 6,
+      forks_count: 6
+    },
+    {
+      repo_name: "Repo 04",
+      repo_url: "https://nowhere4.com",
+      watchers_count: 4,
+      stars_count: 4,
+      forks_count: 4
+    },
+    {
+      repo_name: "Repo 05",
+      repo_url: "https://nowhere5.com",
+      watchers_count: 2,
+      stars_count: 2,
+      forks_count: 2
+    }
+  ],
+  language_used: {
+    PHP: 5,
+    JavaScript: 8,
+    Perl: 3,
+    CSS: 12
+  }
 };
 
-describe("Database.test.js", () => {
-    describe('Database Tests', () => {
+describe("Database.test", () => {
+  after(done => {
+    db.close(done);
+  });
 
-        before((done) => {
-            db.connect();
-            db.clear();
-            done();
-        })
+  describe("Connect Database", () => {
+    it("Can connect to database", done => {
+      db.connect(done);
+    }).timeout(10000);
+  });
 
-        after((done) => {
-            db.close();
-            done();
-        });
-
-        it('Can create database', (done) => {
-            expect(db).to.not.be.undefined();
-            done();
-        });
-
-        it('Can calculate delay', (done) => {
-            const delay = db.delay(500);
-            expect(delay).to.be.above(0);
-            done();
-        });
-
-        it('Can insert/get user and cache user', (done) => {                
-            db.insertUser(user);
-
-            db.getUser(user.login)
-                .then((userResult) => {
-                    expect(userResult).to.be.deep.equal(user);
-                })
-                .catch((err) => {
-                    done(new Error(err));                           
-                });
-
-            db.getCachedUser(user.login)
-                .then((userCacheResult) => {          
-                    expect(userCacheResult.id).to.be.deep.equal(user.id);
-                    expect(userCacheResult.login).to.be.deep.equal(user.login);
-                })
-                .catch((err) => {
-                    done(new Error(err));                           
-                });
-
-            done();
-        }).timeout(10000);
+  describe("Drop Database", () => {
+    it("Can drop database", done => {
+      db.clear(done);
     });
+  });
+
+  describe("Database Tests", () => {
+    it("Can create database", done => {
+      expect(db).to.not.be.undefined();
+      done();
+    });
+
+    it("Can calculate delay", done => {
+      const delay = db.delay(500);
+      expect(delay).to.be.above(0);
+      done();
+    });
+
+    describe("Can insert user and cache user", () => {
+      it("User and user cache insertion", done => {
+        db.insertUser(user, done);
+      });
+    });
+
+    describe("Can get user", () => {
+      it("User fetching", done => {
+        db.getUser(user.login)
+          .then(userResult => {
+            expect(userResult).to.not.be.null();
+            delete userResult._id;
+            delete userResult.__v;
+            expect(userResult).to.be.deep.equal(user);
+            done();
+          })
+          .catch(err => {
+            done(new Error(err));
+          });
+      });
+    });
+
+    describe("Can get user cache", () => {
+      it("User cache fetching", done => {
+        db.getCachedUser(user.login)
+          .then(userCacheResult => {
+            expect(userCacheResult).to.not.be.null();
+            expect(userCacheResult.id).to.be.deep.equal(user.id);
+            expect(userCacheResult.login).to.be.deep.equal(user.login);
+            done();
+          })
+          .catch(err => {
+            done(new Error(err));
+          });
+      });
+    });
+  });
 });

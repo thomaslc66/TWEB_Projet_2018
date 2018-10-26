@@ -1,92 +1,97 @@
-const request = require('supertest');
-let { server, db } = require('../index.js');
+const supertest = require("supertest");
+const { app, db, port } = require("../index");
 
-describe('Tests Responses', () => {
-    before((done) => {
-        db.clear();
-        done();
-    })
+// Do not chanche test order !!!!
+// Test order is very important !!!
+describe("index.test and Route", () => {
+  let server;
+  let request;
 
-    after((done) => {
-        server.close();
-        db.close();
+  describe("Launch App", () => {
+    it("App launching", done => {
+      server = app.listen(port, () => {
+        console.log(`Listening on http://localhost:${port}`);
+        request = supertest.agent(server);
         done();
+      });
     });
+  });
 
-    it('[/] Should answer to default route', (done) => {
-        request(server)
-        .get('/')
-        .expect('Content-Type', "text/html; charset=utf-8")
+  describe("Connect Database", () => {
+    it("Database connection", done => {
+      db.connect(done);
+    }).timeout(10000);
+  });
+
+  describe("Drop Database", () => {
+    it("Dropping database", done => {
+      db.clear(done);
+    });
+  });
+
+  describe("Test Cache", () => {
+    it("[/user/:username] Cache should work", done => {
+      request
+        .get("/user/tweb2018")
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(200);
+
+      request
+        .get("/user/tweb2018")
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(200, done);
+    }).timeout(10000);
+  });
+
+  describe("Test Routes", () => {
+    it("[/] Should answer to default route", done => {
+      request
+        .get("/")
+        .expect("Content-Type", "text/html; charset=utf-8")
         .expect(200, done);
     });
 
-    it('Should error 404', (done) => {
-        request(server)
-        .get('/qwertz')
-        .expect('Content-Type', "text/html; charset=utf-8")
+    it("Should error 404", done => {
+      request
+        .get("/qwertz")
+        .expect("Content-Type", "text/html; charset=utf-8")
         .expect(404, done);
     });
 
-    it('[/user/:username] Should answer', (done) => {
-        request(server)
-          .get('/user/tweb2018')
-          .expect('Content-Type', "application/json; charset=utf-8")
-          .expect(200, done);
+    it("[/user/:username] Should answer", done => {
+      request
+        .get("/user/tweb2018")
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(200, done);
     }).timeout(10000);
 
-    it('[/user/:username] Cache should work', (done) => {
-        request(server)
-          .get('/user/tweb2018')
-          .expect('Content-Type', "application/json; charset=utf-8")
-          .expect(200);
-          
-        request(server)
-          .get('/user/tweb2018')
-          .expect('Content-Type', "application/json; charset=utf-8")
-          .expect(200, done);
+    it("[/user/:username] Should answer error", done => {
+      request
+        .get("/user/askjhfkjsadhfjadsbvkjfvb")
+        .expect("Content-Type", "application/json; charset=utf-8")
+        .expect(
+          200,
+          {
+            error: 1,
+            text: "not found"
+          },
+          done
+        );
     }).timeout(10000);
+  });
 
-    it('[/user/:username] Should answer error', (done) => {
-        request(server)
-          .get('/user/askjhfkjsadhfjadsbvkjfvb')
-          .expect('Content-Type', "application/json; charset=utf-8")
-          .expect(200, { 
-                error : 1,
-                "text": "not found"
-            }, done);
-    }).timeout(10000);
+  describe("Close database connection", () => {
+    it("Connection database closing", done => {
+      db.close(done);
+    });
+  });
 
-    it('[/repo/:owner/:name] Should answer', (done) => {
-        request(server)
-          .get('/repo/bouda19/Teaching-TWEB-2018-Labo-01')
-          .expect('Content-Type', "application/json; charset=utf-8")
-          .expect(200, done);
-    }).timeout(10000);
-    
-    it('[/repo/:owner/:name] Should answer error', (done) => {
-        request(server)
-          .get('/repo/bouda19/askjhfkjsadhfjadsbvkjfvb/asdsda')
-          .expect('Content-Type', "text/html; charset=utf-8")
-          .expect(200, { 
-                error : 1,
-                "text": "not found"
-            }, done);
-    }).timeout(10000);
-
-    it('[/repo/:name] Should answer', (done) => {
-        request(server)
-          .get('/repo/Teaching-TWEB-2018-Labo-01')
-          .expect('Content-Type', "application/json; charset=utf-8")
-          .expect(200, done);
-    }).timeout(10000);
-
-    it('[/repo/:name] Should answer error', (done) => {
-        request(server)
-          .get('/repo/askjhfkjsadhfjadsbvkjfvb')
-          .expect('Content-Type', "application/json; charset=utf-8")
-          .expect(200, { 
-                error : 1,
-                "text": "not found"
-            }, done);
-    }).timeout(10000);
+  describe("Shutdown server", () => {
+    it("Server shutting down", done => {
+      server.close(() => {
+        console.log("Server Closed");
+        done();
+      });
+    });
+  });
 });
