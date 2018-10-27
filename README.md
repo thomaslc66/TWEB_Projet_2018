@@ -77,69 +77,69 @@ localhost:3000/user/testuser
 
 This call will return you a Json table with multiple information.
 
-```json
-{
-error: 0,
-query_date: "2018-10-27T10:55:20.283Z",
-type: "User",
-id: 9827392,
-creation_date: "2014-11-18T18:14:13Z",
-login: "thomaslc66",
-name: null,
-company: null,
-location: null,
-avatar: "https://avatars0.githubusercontent.com/u/9827392?v=4",
-followers_count: 6,
-following_count: 6,
-public_repos_number: 24,
-five_best_repo: [
-{
-repo_name: "sye_labo5",
-repo_url: "https://api.github.com/repos/thomaslc66/sye_labo5",
-watchers_count: 0,
-stars_count: 0,
-forks_count: 1
-},
-{
-repo_name: "Plex_Media",
-repo_url: "https://api.github.com/repos/thomaslc66/Plex_Media",
-watchers_count: 0,
-stars_count: 0,
-forks_count: 0
-},
-{
-repo_name: "AndroidCyclingTrainer",
-repo_url: "https://api.github.com/repos/thomaslc66/AndroidCyclingTrainer",
-watchers_count: 0,
-stars_count: 0,
-forks_count: 0
-},
-{
-repo_name: "ArmagetronServer",
-repo_url: "https://api.github.com/repos/thomaslc66/ArmagetronServer",
-watchers_count: 0,
-stars_count: 0,
-forks_count: 0
-},
-{
-repo_name: "ASD1_Labo3",
-repo_url: "https://api.github.com/repos/thomaslc66/ASD1_Labo3",
-watchers_count: 0,
-stars_count: 0,
-forks_count: 0
-}
-],
-language_used: {
-C++: 3,
-Java: 11,
-HTML: 3,
-null: 2,
-PHP: 1,
-CSS: 1,
-Python: 1,
-C: 1,
-JavaScript: 1
-}
+```javascript
+  {
+    error: 0,
+    query_date: "2018-10-27T10:55:20.283Z",
+    type: "User",
+    id: 9827392,
+    creation_date: "2014-11-18T18:14:13Z",
+    login: "thomaslc66",
+    name: null,
+    company: null,
+    location: null,
+    avatar: "https://avatars0.githubusercontent.com/u/9827392?v=4",
+    followers_count: 6,
+    following_count: 6,
+    public_repos_number: 24,
+    five_best_repo: [
+      {
+        repo_name: "sye_labo5",
+        repo_url: "https://api.github.com/repos/thomaslc66/sye_labo5",
+        watchers_count: 0,
+        stars_count: 0,
+        forks_count: 1
+      },
+      {
+        repo_name: "Plex_Media",
+        repo_url: "https://api.github.com/repos/thomaslc66/Plex_Media",
+        watchers_count: 0,
+        stars_count: 0,
+        forks_count: 0
+      },
+      {
+        repo_name: "AndroidCyclingTrainer",
+        repo_url: "https://api.github.com/repos/thomaslc66/AndroidCyclingTrainer",
+        watchers_count: 0,
+        stars_count: 0,
+        forks_count: 0
+      },
+      {
+        repo_name: "ArmagetronServer",
+        repo_url: "https://api.github.com/repos/thomaslc66/ArmagetronServer",
+        watchers_count: 0,
+        stars_count: 0,
+        forks_count: 0
+      },
+      {
+        repo_name: "ASD1_Labo3",
+        repo_url: "https://api.github.com/repos/thomaslc66/ASD1_Labo3",
+        watchers_count: 0,
+        stars_count: 0,
+        forks_count: 0
+      }
+      ],
+      language_used: {
+        C++: 3,
+        Java: 11,
+        HTML: 3,
+        null: 2,
+        PHP: 1,
+        CSS: 1,
+        Python: 1,
+        C: 1,
+        JavaScript: 1
+        }
 }
 ```
 
@@ -160,7 +160,7 @@ A simple way to deploy this app is with Heroku.
 2) Go to Heroku website and register or login in
 3) create a new app in heroku admin panel and link it to your github reop (forked)
 4) A good thing to do is: in the package.json file add in the start scirpt (npm install)
-```{shell}
+```shell
   "scripts": {
     "start": "npm install && node index.js",
     "test": "nyc --reporter=text --reporter=html mocha"
