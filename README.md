@@ -11,7 +11,7 @@ This project can be fork and updated if you want it to display more or less info
 1) Install [mongodb](https://www.mongodb.com/download-center?initial=true#community) and run the following command
 (On Windows you must Add MongoDB binaries to the System PATH "C:\Program Files\MongoDB\Server\4.0\bin" and restart Visual Studio Code)
 
-```{shell}
+```shell
 mongod --dbpath=./data/ --port 12345
 ```
 
@@ -21,7 +21,7 @@ You alson need to create a folder named "data" in the root of the directory
 2) Create a .env file in the root directory and add the following configuration
 (You must install dotenv Visual Studio Code plugin)
 
-```{java}
+```java
 PORT='3000'
 ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'
@@ -35,7 +35,7 @@ NODE_MODE : Value "test, "developement" or "production"
 
 Add this option to VSCode User Setting json
 
-```{json}
+```json
   "workbench.iconTheme": "vscode-icons",
   "editor.formatOnSave": true,
   "eslint.autoFixOnSave": true,
@@ -49,7 +49,7 @@ Add this option to VSCode User Setting json
 
 Run this command a terminal to install all dependencies
 
-```{shell}
+```shell
 npm install
 ```
 
@@ -58,7 +58,7 @@ npm install
 
 Then you can run this command in an other terminal
 
-```{shell}
+```shell
 npm start
 ```
 
@@ -71,13 +71,13 @@ You can use this route to ask for the github info on a user.
 1. /user/:username where username is the github login of the one you want to stalk.
 
 exemple: 
-```{shell}
+```shell
 localhost:3000/user/testuser
 ```
 
 This call will return you a Json table with multiple information.
 
-```{json}
+```json
 {
 error: 0,
 query_date: "2018-10-27T10:55:20.283Z",
@@ -168,7 +168,7 @@ A simple way to deploy this app is with Heroku.
   ```
   5) go into the app setting. From here you need to set the env variables for your heroku app.
   6) You need to add one by one those env. variables with your personal token
-  ```{java}
+  ```java
 PORT='3000'
 ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'
