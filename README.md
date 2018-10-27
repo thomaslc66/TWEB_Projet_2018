@@ -25,14 +25,12 @@ You alson need to create a folder named "data" in the root of the directory
 PORT='3000'
 ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'
-GITHUB_USER='user'
 NODE_MODE='developement'
 ```
 Link to generate a Github Access Token:
 [Generate Tocken](https://blog.github.com/2013-05-16-personal-api-tokens/)
 
 ACCESS_TOKEN : Github token
-GITHUB_USER : Github user
 NODE_MODE : Value "test, "developement" or "production"
 
 Add this option to VSCode User Setting json
@@ -174,7 +172,6 @@ A simple way to deploy this app is with Heroku.
 PORT='3000'
 ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'
-GITHUB_USER='user'
 NODE_MODE='production'
 ```
   7) You can now enable the automatic deploy or deploy the app manualy.

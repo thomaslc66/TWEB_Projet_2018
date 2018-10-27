@@ -1,14 +1,5 @@
 const request = require("superagent");
 
-class ResponseError extends Error {
-  constructor(res, body) {
-    super(`${res.status} error requesting ${res.url}: ${res.statusText}`);
-    this.status = res.status;
-    this.path = res.url;
-    this.body = body;
-  }
-}
-
 /**************************************************************
  *
  * @class Github
@@ -38,7 +29,6 @@ class Github {
     return (
       request
         .get(url)
-        //.auth(process.env.GITHUB_USER, process.env.ACCESS_TOKEN)
         .set("Accept", "application/vnd.github.v3+json")
         .set("Authorization", `token ${process.env.ACCESS_TOKEN}`)
         .then(response => {
