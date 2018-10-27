@@ -186,12 +186,25 @@ class Github {
               .slice(0, 5);
 
             // Count number of different language repositories
-            let language_used = 0;
+            let language_used = {};
             if (repositories.length !== 0) {
               language_used = repositories.reduce((prev, curr) => {
                 prev[curr.language] = (prev[curr.language] || 0) + 1;
                 return prev;
               }, {});
+
+              language_used = Object.entries(language_used).map(
+                ([key, value]) => ({
+                  name: key,
+                  count: value
+                })
+              );
+
+              language_used = language_used
+                .sort((a, b) => {
+                  return b.count - a.count;
+                })
+                .slice(0, 5);
             }
 
             return {
