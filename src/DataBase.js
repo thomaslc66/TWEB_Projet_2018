@@ -128,7 +128,7 @@ class DataBase {
           //user not find return null
           return null;
         } else {
-          //user is in DB return the cachedUser store in DB
+          //user is in DB, return the cachedUser store in DB
           return cachedUser.toObject({ virtuals: false });
         }
       })
@@ -186,7 +186,7 @@ class DataBase {
     return User.findOne({ login })
       .then(dbUser => {
         // can dbUser be null?
-        return dbUser.toObject();
+        return dbUser.toObject({ virtuals: false });
       })
       .catch(err => {
         console.log(err.message);

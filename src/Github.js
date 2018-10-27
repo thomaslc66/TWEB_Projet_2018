@@ -141,40 +141,6 @@ class Github {
       });
   }
 
-  /********************************************************
-   * @function createSearchResultJSON
-   * @global generate a list of possible repository when you don't know the owner
-   * @param {*} url
-   * @returns Json Object with usefull repository information
-   ********************************************************/
-  createSearchResultJSON(url) {
-    return this.githubPromise(url)
-      .then(repo => {
-        if (repo.error === 1) {
-          console.log("No Repository founded");
-          return repo;
-        } else {
-          //multiple repositories
-          const result = [];
-
-          repo.items.forEach(element => {
-            result.push({
-              fullname: element.full_name,
-              user: element.owner.login,
-              url: element.html_url,
-              language: element.language
-            });
-          });
-
-          return result;
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        return this.createErrorJSON();
-      });
-  }
-
   /* -------------------------------- USER PART --------------------------- */
 
   /********************************************************
@@ -189,7 +155,6 @@ class Github {
           console.log("User not found");
           return user;
         } else {
-          //check if user is already in db
           const starred_url = this.getUrl(user.starred_url);
           const gists_url = this.getUrl(user.gists_url);
           const following_url = this.getUrl(user.following_url);
@@ -203,7 +168,7 @@ class Github {
           ];
           const promises = urls.map(urlParam => this.githubPromise(urlParam));
           return Promise.all(promises).then(results => {
-            // TODO modification of the Json results depending on the returned values
+            // TODO modification of the Json results depending on the returned values desired
             const [
               repositories,
               followers_,

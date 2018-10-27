@@ -20,6 +20,9 @@ let schema = new Schema(
   {
     toObject: {
       virtuals: false
+    },
+    toJSON : { 
+      virtuals: false
     }
   }
 );

@@ -11,7 +11,7 @@ if (process.env.NODE_MODE !== "test") {
   db.connect();
 }
 
-/********************** Routes ************************* */
+/********************** Route ************************* */
 routes.get("/user/:username", (req, res) => {
   const username = req.params.username;
   const url = `${process.env.GITHUB_URL}users/${username}`;
