@@ -8,8 +8,8 @@ This project can be fork and updated if you want it to display more or less info
 
 ## Prepare for local environnement
 
-1) Install [mongodb](https://www.mongodb.com/download-center?initial=true#community) and run the following command
-(On Windows you must Add MongoDB binaries to the System PATH "C:\Program Files\MongoDB\Server\4.0\bin" and restart Visual Studio Code)
+1. Install [mongodb](https://www.mongodb.com/download-center?initial=true#community) and run the following command
+   (On Windows you must Add MongoDB binaries to the System PATH "C:\Program Files\MongoDB\Server\4.0\bin" and restart Visual Studio Code)
 
 ```shell
 mongod --dbpath=./data/ --port 12345
@@ -18,8 +18,8 @@ mongod --dbpath=./data/ --port 12345
 Not that the DB il local is running on port: 12345
 You alson need to create a folder named "data" in the root of the directory
 
-2) Create a .env file in the root directory and add the following configuration
-(You must install dotenv Visual Studio Code plugin)
+2. Create a .env file in the root directory and add the following configuration
+   (You must install dotenv Visual Studio Code plugin)
 
 ```java
 PORT='3000'
@@ -27,6 +27,7 @@ ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'
 NODE_MODE='developement'
 ```
+
 Link to generate a Github Access Token:
 [Generate Tocken](https://blog.github.com/2013-05-16-personal-api-tokens/)
 
@@ -53,7 +54,6 @@ Run this command a terminal to install all dependencies
 npm install
 ```
 
-
 ## Run server
 
 Then you can run this command in an other terminal
@@ -70,7 +70,8 @@ You can use this route to ask for the github info on a user.
 
 1. /user/:username where username is the github login of the one you want to stalk.
 
-exemple: 
+exemple:
+
 ```shell
 localhost:3000/user/testuser
 ```
@@ -128,18 +129,29 @@ This call will return you a Json table with multiple information.
         stars_count: 0,
         forks_count: 0
       }
-      ],
-      language_used: {
-        C++: 3,
-        Java: 11,
-        HTML: 3,
-        null: 2,
-        PHP: 1,
-        CSS: 1,
-        Python: 1,
-        C: 1,
-        JavaScript: 1
-        }
+    ],
+    language_used: [
+      {
+        name: "Java",
+        count: 10
+      },
+      {
+        name: "Python",
+        count: 8
+      },
+      {
+        name: "Go",
+        count: 3
+      },
+      {
+        name: "C",
+        count: 2
+      },
+      {
+        name: "null",
+        count: 2
+      }
+    ]
 }
 ```
 
@@ -150,29 +162,31 @@ If the cache time (you can change it to suits your needs) is still less than the
 
 Otherwise if the cache time is more, then a new call to the Github API will be made and the user will be updated in the DB.
 
-
-
 ## Backend Node.js Server with use of github API and Mongo DB (Production)
 
 A simple way to deploy this app is with Heroku.
 
-1) Fork this github repo
-2) Go to Heroku website and register or login in
-3) create a new app in heroku admin panel and link it to your github reop (forked)
-4) A good thing to do is: in the package.json file add in the start scirpt (npm install)
+1. Fork this github repo
+2. Go to Heroku website and register or login in
+3. create a new app in heroku admin panel and link it to your github reop (forked)
+4. A good thing to do is: in the package.json file add in the start scirpt (npm install)
+
 ```shell
   "scripts": {
     "start": "npm install && node index.js",
     "test": "nyc --reporter=text --reporter=html mocha"
   },
-  ```
-  5) go into the app setting. From here you need to set the env variables for your heroku app.
-  6) You need to add one by one those env. variables with your personal token
-  ```java
+```
+
+5. go into the app setting. From here you need to set the env variables for your heroku app.
+6. You need to add one by one those env. variables with your personal token
+
+```java
 PORT='3000'
 ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'
 NODE_MODE='production'
 ```
-  7) You can now enable the automatic deploy or deploy the app manualy.
-  8) go to your app website and check the app with a user.
+
+7. You can now enable the automatic deploy or deploy the app manualy.
+8. go to your app website and check the app with a user.
