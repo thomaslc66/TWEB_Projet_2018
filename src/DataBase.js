@@ -237,7 +237,7 @@ class DataBase {
               if (err) {
                 console.log(`Error during cache update ${err.message}`);
               }
-              done();
+              if (typeof done === "function") done();
             }
           );
         }
