@@ -1,3 +1,7 @@
+if (process.env.NODE_MODE !== "production") {
+  require("dotenv").config({ path: `${__dirname}/../.env` });
+}
+
 const request = require("superagent");
 
 /**************************************************************
@@ -36,6 +40,8 @@ class Github {
             // Send response in object Format
             return response.body;
           }
+          // Difficult to test
+          /* istanbul ignore next */
           return this.createErrorJSON();
         })
         // Error, user or repo not found
@@ -71,66 +77,6 @@ class Github {
     };
   }
 
-  /* -------------------------------- REPO PART --------------------------- */
-
-  /********************************************************
-   * @function createRepoJSON
-   * @global generate a JSON form api for a repository
-   * @param {*} url
-   * @returns Json Object with usefull repository information
-   ********************************************************/
-  createRepoJSON(url) {
-    return this.githubPromise(url)
-      .then(repo => {
-        if (repo.error === 1) {
-          console.log("Repository not found");
-          return repo;
-        } else {
-          const releases_url = this.getUrl(repo.releases_url);
-          const urls = [repo.forks_url, releases_url];
-          const promises = urls.map(urlParam => this.githubPromise(urlParam));
-          return Promise.all(promises).then(results => {
-            const [forks_urls, releases_url] = results;
-            const forks_url = forks_urls.map(forkUrl => {
-              return forkUrl.html_url;
-            });
-            const release_url = releases_url.map(releaseUrl => {
-              return releaseUrl.assets[0].download_count;
-            });
-
-            let total_realse_download = 0;
-            if (release_url.length !== 0) {
-              total_realse_download = release_url.reduce(
-                (accumulator, currentValue) => accumulator + currentValue
-              );
-            }
-            return {
-              //add what you need to display
-              error: 0,
-              query_date: new Date(),
-              id: repo.id,
-              name: repo.name,
-              html_url: repo.html_url,
-              owner_login: repo.owner.login,
-              owner_html_url: repo.owner.html_url,
-              forks_count: repo.forks_count,
-              forks_url: forks_url,
-              watchers_count: repo.watchers_count,
-              open_issues_count: repo.open_issues_count,
-              creation_date: repo.created_at,
-              last_update_ate: repo.updated_at,
-              release_download_count: total_realse_download,
-              company: repo.company
-            };
-          });
-        }
-      })
-      .catch(err => {
-        console.log(err);
-        return this.createErrorJSON();
-      });
-  }
-
   /* -------------------------------- USER PART --------------------------- */
 
   /********************************************************
@@ -145,28 +91,10 @@ class Github {
           console.log("User not found");
           return user;
         } else {
-          const starred_url = this.getUrl(user.starred_url);
-          const gists_url = this.getUrl(user.gists_url);
-          const following_url = this.getUrl(user.following_url);
-          const urls = [
-            user.repos_url,
-            user.followers_url,
-            following_url,
-            gists_url,
-            starred_url,
-            user.subscriptions_url
-          ];
+          const urls = [user.repos_url];
           const promises = urls.map(urlParam => this.githubPromise(urlParam));
           return Promise.all(promises).then(results => {
-            // TODO modification of the Json results depending on the returned values desired
-            const [
-              repositories,
-              followers_,
-              following_,
-              gists_,
-              starred_,
-              subscriptions_
-            ] = results;
+            const [repositories] = results;
             const five_best_repo = repositories
               .map(repo => ({
                 repo_name: repo.name,
@@ -219,27 +147,23 @@ class Github {
               location: user.location,
               avatar: user.avatar_url,
               followers_count: user.followers,
-              //followers: followers_,
               following_count: user.following,
-              //following: following_,
               public_repos_number: user.public_repos,
-              //repos: repositories,
               five_best_repo: five_best_repo,
               language_used: language_used
-              //subscriptions: subscriptions_,
-              //gists_number: user.public_gists,
-              //gists: gists_,
-              //starredRepos: starred_,
             };
           });
         }
       })
       .catch(err => {
-        console.log(err);
-        return Promise.resolve(() => {
-          console.log("error");
-          this.createErrorJSON();
-        });
+        // Difficult to test
+        /* istanbul ignore next */ {
+          console.log(err);
+          return Promise.resolve(() => {
+            console.log("error");
+            this.createErrorJSON();
+          });
+        }
       });
   }
 }

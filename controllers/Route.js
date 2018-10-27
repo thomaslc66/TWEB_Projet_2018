@@ -1,3 +1,7 @@
+if (process.env.NODE_MODE !== "production") {
+  require("dotenv").config({ path: `${__dirname}/../.env` });
+}
+
 const routes = require("express").Router();
 
 const Github = require("./../src/Github");

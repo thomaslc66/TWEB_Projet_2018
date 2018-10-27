@@ -1,4 +1,3 @@
-require("./index.test");
 const chai = require("chai");
 const dirtyChai = require("dirty-chai");
 const expect = chai.expect;
@@ -177,7 +176,7 @@ describe("Database.test", () => {
           .catch(err => {
             done(new Error(err));
           });
-      }).timeout(10000);
+      }).timeout(20000);
     });
 
     describe("Can update user", () => {

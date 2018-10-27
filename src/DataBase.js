@@ -1,9 +1,13 @@
+if (process.env.NODE_MODE !== "production") {
+  require("dotenv").config({ path: `${__dirname}/../.env` });
+}
+
 //const Schema = require('./src/User.js');
 const Mongoose = require("mongoose");
 // To Avoid findAndModify is deprecated
 Mongoose.set("useFindAndModify", false);
 
-const CACHE_TIME = process.env.NODE_MODE !== "test" ? 100 : 5;
+const CACHE_TIME = process.env.NODE_MODE === "test" ? 5 : 100;
 
 const User = require("./model/UserModel");
 const CacheUser = require("./model/UserCacheModel");
