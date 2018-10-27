@@ -2,7 +2,8 @@
 const Mongoose = require("mongoose");
 // To Avoid findAndModify is deprecated
 Mongoose.set("useFindAndModify", false);
-const CACHE_TIME = 100;
+
+const CACHE_TIME = process.env.NODE_MODE !== "test" ? 100 : 5;
 
 const User = require("./model/UserModel");
 const CacheUser = require("./model/UserCacheModel");
@@ -39,9 +40,11 @@ class DataBase {
     this.db.once("close", () => {
       console.log("Disconnected from DB");
     });
+    // Difficult to test
+    /* istanbul ignore next */
     this.db.on("error", () => {
       console.error.bind(console, "connection error: ");
-      close();
+      this.close();
     });
     this.db.once("open", () => {
       console.log("Connected to DB => OK");
@@ -134,8 +137,11 @@ class DataBase {
       })
       .catch(error => {
         //error accessing DB
-        console.log(error.message);
-        return null;
+        // Difficult to test
+        /* istanbul ignore next */ {
+          console.log(error.message);
+          return null;
+        }
       });
   }
 
@@ -189,8 +195,11 @@ class DataBase {
         return dbUser.toObject({ virtuals: false });
       })
       .catch(err => {
-        console.log(err.message);
-        return null;
+        // Difficult to test
+        /* istanbul ignore next */ {
+          console.log(err.message);
+          return null;
+        }
       });
   }
 
@@ -201,12 +210,14 @@ class DataBase {
    * @return
    *
    *************************************************************/
-  updateUser(user) {
+  updateUser(user, done) {
     User.findOneAndUpdate(
       { id: user.id },
       user,
       { runValidators: true },
       (err, result) => {
+        // Difficult to test
+        /* istanbul ignore if */
         if (err) {
           console.log(`Error during update of user ${user.login}`);
         } else {
@@ -217,9 +228,12 @@ class DataBase {
             { query_date: new Date() },
             { runValidators: true },
             (err, result) => {
+              // Difficult to test
+              /* istanbul ignore if */
               if (err) {
                 console.log(`Error during cache update ${err.message}`);
               }
+              done();
             }
           );
         }

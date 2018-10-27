@@ -29,20 +29,6 @@ describe("index.test and Route", () => {
     });
   });
 
-  describe("Test Cache", () => {
-    it("[/user/:username] Cache should work", done => {
-      request
-        .get("/user/tweb2018")
-        .expect("Content-Type", "application/json; charset=utf-8")
-        .expect(200);
-
-      request
-        .get("/user/tweb2018")
-        .expect("Content-Type", "application/json; charset=utf-8")
-        .expect(200, done);
-    }).timeout(10000);
-  });
-
   describe("Test Routes", () => {
     it("[/] Should answer to default route", done => {
       request

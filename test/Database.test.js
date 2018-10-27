@@ -131,5 +131,75 @@ describe("Database.test", () => {
           });
       });
     });
+
+    describe("Can search user", () => {
+      it("User searching", done => {
+        db.searchUser(user.login)
+          .then(userResult => {
+            expect(userResult).to.not.be.null();
+            expect(userResult.id).to.be.deep.equal(user.id);
+            expect(userResult.login).to.be.deep.equal(user.login);
+            done();
+          })
+          .catch(err => {
+            done(new Error(err));
+          });
+      });
+
+      it("User searching failed", done => {
+        db.searchUser("hello")
+          .then(userResult => {
+            expect(userResult).to.not.be.null();
+            expect(userResult.error).to.be.deep.equal(1);
+            expect(userResult.cache).to.be.deep.equal(false);
+            expect(userResult.update).to.be.deep.equal(false);
+            done();
+          })
+          .catch(err => {
+            done(new Error(err));
+          });
+      });
+
+      it("User searching need to be update", done => {
+        const start = new Date().getTime();
+        let end = start;
+        while (end < start + 5000) {
+          end = new Date().getTime();
+        }
+        db.searchUser(user.login)
+          .then(userResult => {
+            expect(userResult).to.not.be.null();
+            expect(userResult.error).to.be.deep.equal(1);
+            expect(userResult.cache).to.be.deep.equal(true);
+            expect(userResult.update).to.be.deep.equal(true);
+            done();
+          })
+          .catch(err => {
+            done(new Error(err));
+          });
+      }).timeout(10000);
+    });
+
+    describe("Can update user", () => {
+      it("User updating", done => {
+        user.following_count = 500;
+        db.updateUser(user, done);
+      });
+    }).timeout(10000);
+
+    describe("Validate update user", () => {
+      it("User update validating", done => {
+        db.getUser(user.login)
+          .then(userResult => {
+            delete userResult._id;
+            delete userResult.__v;
+            expect(userResult).to.be.deep.equal(user);
+            done();
+          })
+          .catch(err => {
+            done(new Error(err));
+          });
+      });
+    }).timeout(10000);
   });
 });
