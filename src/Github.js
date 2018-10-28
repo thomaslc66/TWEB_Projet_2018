@@ -1,41 +1,37 @@
-if (process.env.NODE_MODE !== "production") {
-  require("dotenv").config({ path: `${__dirname}/../.env` });
-}
-
 const request = require("superagent");
 
-/**************************************************************
+/* *************************************************************
  *
  * @class Github
  * @description Github class is the class that is used to call github api
  * and send json formated object to the client
  *
- **************************************************************/
+ ************************************************************* */
 class Github {
-  /**********************************************************
-   * @constructor - constructor of the Github Class
-   * @param token - the token to the githubAPi
-   * @description - object constructor
-   ***********************************************************/
+  /* *********************************************************
+  * @constructor - constructor of the Github Class
+  * @param token - the token to the githubAPi
+  * @description - object constructor
+  ********************************************************** */
   constructor({ token } = {}) {
     this.token = token;
   }
 
-  /**************************************************************
-   *
-   * @name githubPromise
-   * @param {*} url - url of the api to parse
-   * @returns - return a promise with a json object
-   * @description - method to ask github for a json object
-   *
-   *************************************************************/
+  /* *************************************************************
+  *
+  * @name githubPromise
+  * @param {*} url - url of the api to parse
+  * @returns - return a promise with a json object
+  * @description - method to ask github for a json object
+  *
+  ************************************************************ */
   githubPromise(url) {
     return (
       request
         .get(url)
         .set("Accept", "application/vnd.github.v3+json")
         .set("Authorization", `token ${process.env.ACCESS_TOKEN}`)
-        .then(response => {
+        .then((response) => {
           if (response.statusCode === 200) {
             // Send response in object Format
             return response.body;
@@ -45,72 +41,70 @@ class Github {
           return this.createErrorJSON();
         })
         // Error, user or repo not found
-        .catch(error => {
+        .catch((error) => {
           console.log("Error on GithubPromise: ", error.message);
           return this.createErrorJSON();
         })
     );
   }
 
-  /**********************************************************
-   *
-   * @function getUrl
-   * @param {*} url the url we want to split
-   * @description return the url without the unessary parts
-   *
-   ************************************************************/
+  /* *********************************************************
+  *
+  * @function getUrl
+  * @param {*} url the url we want to split
+  * @description return the url without the unessary parts
+  *
+  *********************************************************** */
   getUrl(url) {
     return url.split("{")[0];
   }
 
-  /***************************************************************************
+  /* **************************************************************************
    *
    * @function createErrorJSON
    * @description create and return a Json in case of error during api request
    * @returns return a JSON with and error and a text
    *
-   ****************************************************************************/
+   *************************************************************************** */
   createErrorJSON() {
     return {
       error: 1,
-      text: "not found"
+      text: "not found",
     };
   }
 
   /* -------------------------------- USER PART --------------------------- */
 
-  /********************************************************
+  /* *******************************************************
    * @function createUserJSON
    * @global generate a JSON form api for a user
    * @param {*} url
-   ********************************************************/
+   ******************************************************* */
   createUserJSON(url) {
     return this.githubPromise(url)
-      .then(user => {
+      .then((user) => {
         if (user.error === 1) {
           console.log("User not found");
           return user;
         } else {
           const urls = [user.repos_url];
           const promises = urls.map(urlParam => this.githubPromise(urlParam));
-          return Promise.all(promises).then(results => {
+          return Promise.all(promises).then((results) => {
             const [repositories] = results;
+
             const five_best_repo = repositories
               .map(repo => ({
                 repo_name: repo.name,
                 repo_url: repo.url,
                 watchers_count: repo.watchers_count,
                 stars_count: repo.stargazers_count,
-                forks_count: repo.forks_count
+                forks_count: repo.forks_count,
               }))
               // Use || to sort by multiple properties to have sort.thenSortBy effect
-              .sort((a, b) => {
-                return (
-                  b.watchers_count - a.watchers_count ||
-                  b.forks_count - a.forks_count ||
-                  b.stars_count - a.stars_count
-                );
-              })
+              .sort((a, b) => (
+                b.watchers_count - a.watchers_count
+                  || b.forks_count - a.forks_count
+                  || b.stars_count - a.stars_count))
               .slice(0, 5);
 
             // Count number of different language repositories
@@ -124,16 +118,14 @@ class Github {
               language_used = Object.entries(language_used).map(
                 ([key, value]) => ({
                   name: key,
-                  count: value
-                })
+                  count: value,
+                }),
               );
 
               language_used = language_used
-                .sort((a, b) => {
-                  return b.count - a.count;
-                })
+                .sort((a, b) => b.count - a.count)
                 .slice(0, 5)
-                .map(item => {
+                .map((item) => {
                   if (item.name === "null") item.name = "unknown";
                   return item;
                 });
@@ -154,20 +146,23 @@ class Github {
               following_count: user.following,
               public_repos_number: user.public_repos,
               five_best_repo: five_best_repo,
-              language_used: language_used
+              language_used: language_used,
             };
           });
         }
       })
-      .catch(err => {
-        // Difficult to test
-        /* istanbul ignore next */ {
+      .catch((err) => {
+      // Difficult to test
+      /* istanbul ignore next */
+      /* eslint-disable no-lone-blocks */
+        {
           console.log(err);
           return Promise.resolve(() => {
             console.log("error");
             this.createErrorJSON();
           });
         }
+      /* eslint-enable no-lone-blocks */
       });
   }
 }

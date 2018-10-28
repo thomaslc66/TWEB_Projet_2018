@@ -1,5 +1,12 @@
+if (process.env.NODE_MODE !== "production") {
+  /* eslint-disable global-require */
+  require("dotenv").config({ path: `${__dirname}/../.env` });
+  /* eslint-enable global-require */
+}
+
 const chai = require("chai");
 const dirtyChai = require("dirty-chai");
+/* eslint-disable prefer-destructuring */
 const expect = chai.expect;
 
 chai.use(dirtyChai);
@@ -32,14 +39,14 @@ describe("Github.test", () => {
   });
 
   describe("Fetch Github", () => {
-    it("Can fetching data from github", done => {
+    it("Can fetching data from github", (done) => {
       github
         .githubPromise(`${process.env.GITHUB_URL}users/${goodLogin}`)
-        .then(result => {
+        .then((result) => {
           expect(result.login).to.be.deep.equal(goodLogin);
           done();
         })
-        .catch(err => {
+        .catch((err) => {
           done(new Error(err));
         });
     });
@@ -47,7 +54,7 @@ describe("Github.test", () => {
     it("Receive error if not good name", () => {
       github
         .githubPromise(`${process.env.GITHUB_URL}users/${wrongLogin}`)
-        .then(result => {
+        .then((result) => {
           expect(result.error).to.be.deep.equal(1);
           expect(result.text).to.be.deep.equal("not found");
         });
@@ -55,14 +62,14 @@ describe("Github.test", () => {
   });
 
   describe("Fetch Github User", () => {
-    it("Can fetching user from github", done => {
+    it("Can fetching user from github", (done) => {
       github
         .createUserJSON(`${process.env.GITHUB_URL}users/${goodLogin}`)
-        .then(result => {
+        .then((result) => {
           expect(result.login).to.be.deep.equal(goodLogin);
           done();
         })
-        .catch(err => {
+        .catch((err) => {
           done(new Error(err));
         });
     });
@@ -70,7 +77,7 @@ describe("Github.test", () => {
     it("Fail when fetching user from github with wrong name", () => {
       github
         .createUserJSON(`${process.env.GITHUB_URL}users/${wrongLogin}`)
-        .then(result => {
+        .then((result) => {
           expect(result.error).to.be.deep.equal(1);
           expect(result.text).to.be.deep.equal("not found");
         });

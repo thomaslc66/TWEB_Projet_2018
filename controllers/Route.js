@@ -1,8 +1,3 @@
-// if for deployement on heroku purpose
-if (process.env.NODE_MODE !== "production") {
-  require("dotenv").config({ path: `${__dirname}/../.env` });
-}
-
 const routes = require("express").Router();
 const Github = require("./../src/Github");
 const DataBase = require("./../src/DataBase");
@@ -15,13 +10,14 @@ if (process.env.NODE_MODE !== "test") {
   db.connect();
 }
 
-/********************** Route ************************* */
+/* ********************* Route ************************* */
 routes.get("/user/:username", (req, res) => {
+  /* eslint-disable prefer-destructuring */
   const username = req.params.username;
   const url = `${process.env.GITHUB_URL}users/${username}`;
 
   db.searchUser(username)
-    .then(user => {
+    .then((user) => {
       // Test in Database.test.js
       /* istanbul ignore else  */
       if (user.error === 1) {
@@ -32,7 +28,7 @@ routes.get("/user/:username", (req, res) => {
         // call to github API
         client
           .createUserJSON(url)
-          .then(userFromApi => {
+          .then((userFromApi) => {
             if (userFromApi.error === 0) {
               // Test in Database.test.js
               /* istanbul ignore if  */
@@ -44,17 +40,17 @@ routes.get("/user/:username", (req, res) => {
             }
             res.send(userFromApi);
           })
-          .catch(err => {
+          .catch(() => {
             /* istanbul ignore next */
             res.send(client.createErrorJSON());
           });
       } else {
-        db.getUser(username).then(result => {
+        db.getUser(username).then((result) => {
           res.send(result);
         });
       }
     })
-    .catch(err => {
+    .catch(() => {
       /* istanbul ignore next */
       res.send(client.createErrorJSON());
     });
@@ -62,5 +58,5 @@ routes.get("/user/:username", (req, res) => {
 
 module.exports = {
   routes,
-  db
+  db,
 };

@@ -20,6 +20,7 @@
   "dependencies": {
     "cors": "^2.8.4",
     "dotenv": "^6.1.0",
+    "eslint-config-airbnb": "^17.1.0",
     "express": "^4.16.4",
     "mongodb": "^3.1.8",
     "mongodb-core": "^3.1.7",
@@ -37,6 +38,7 @@
     "dotenv-defaults": "0.0.1",
     "eslint": "^5.6.1",
     "eslint-config-prettier": "^3.1.0",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-prettier": "^3.0.0",
     "kerberos": "^1.0.0",
     "lint-staged": "^7.3.0",

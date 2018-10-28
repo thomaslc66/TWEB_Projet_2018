@@ -1,6 +1,8 @@
 const supertest = require("supertest");
 const { app, db, port } = require("../index");
 
+const goodLogin = "tweb2018";
+const wrongLogin = "asdjhaskjdhaskjdhaskj";
 // Do not chanche test order !!!!
 // Test order is very important !!!
 describe("index.test and Route", () => {
@@ -8,7 +10,7 @@ describe("index.test and Route", () => {
   let request;
 
   describe("Launch App", () => {
-    it("App launching", done => {
+    it("App launching", (done) => {
       server = app.listen(port, () => {
         console.log(`Listening on http://localhost:${port}`);
         request = supertest.agent(server);
@@ -18,55 +20,55 @@ describe("index.test and Route", () => {
   });
 
   describe("Connect Database", () => {
-    it("Database connection", done => {
+    it("Database connection", (done) => {
       db.connect(done);
     }).timeout(10000);
   });
 
   describe("Drop Database", () => {
-    it("Dropping database", done => {
+    it("Dropping database", (done) => {
       db.clear(done);
     });
   });
 
   describe("Test Routes", () => {
-    it("Should error 404", done => {
+    it("Should error 404", (done) => {
       request
         .get("/qwertz")
         .expect("Content-Type", "text/html; charset=utf-8")
         .expect(404, done);
     });
 
-    it("[/user/:username] Should answer", done => {
+    it("[/user/:username] Should answer", (done) => {
       request
-        .get("/user/tweb2018")
+        .get(`/user/${goodLogin}`)
         .expect("Content-Type", "application/json; charset=utf-8")
         .expect(200, done);
     }).timeout(10000);
 
-    it("[/user/:username] Should answer error", done => {
+    it("[/user/:username] Should answer error", (done) => {
       request
-        .get("/user/askjhfkjsadhfjadsbvkjfvb")
+        .get(`/user/${wrongLogin}`)
         .expect("Content-Type", "application/json; charset=utf-8")
         .expect(
           200,
           {
             error: 1,
-            text: "not found"
+            text: "not found",
           },
-          done
+          done,
         );
     }).timeout(10000);
   });
 
   describe("Close database connection", () => {
-    it("Connection database closing", done => {
+    it("Connection database closing", (done) => {
       db.close(done);
     });
   });
 
   describe("Shutdown server", () => {
-    it("Server shutting down", done => {
+    it("Server shutting down", (done) => {
       server.close(() => {
         console.log("Server Closed");
         done();
