@@ -132,7 +132,11 @@ class Github {
                 .sort((a, b) => {
                   return b.count - a.count;
                 })
-                .slice(0, 5);
+                .slice(0, 5)
+                .map(item => {
+                  if (item.name === "null") item.name = "unknown";
+                  return item;
+                });
             }
 
             return {
