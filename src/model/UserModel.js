@@ -15,13 +15,13 @@ let schema = new Schema(
     avatar: String,
     followers_count: Number,
     following_count: Number,
+    public_repos_number: Number,
     five_best_repo: Object,
-    number_of_public_repos: Number,
     language_used: Object
   },
   {
     toObject: {
-      virtuals: false
+      virtuals: false //don't seems to work at all
     },
     toJSON : { 
       virtuals: false //don't seems to work at all

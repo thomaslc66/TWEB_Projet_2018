@@ -9,10 +9,10 @@ let schema = new Schema(
   },
   {
     toObject: {
-      virtuals: false
+      virtuals: false //don't seems to work at all
     },
     toJSON : { 
-      virtuals: false
+      virtuals: false //don't seems to work at all
     }
   }
 );

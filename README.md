@@ -6,6 +6,9 @@ Our project is a standard use of the github API. With this app, you can search f
 Like a Who Is but for github user. This github Repo is in fact the backend that call the github API and send back the Json value used in the frontend.
 This project can be fork and updated if you want it to display more or less infos on the user. You will find a tutorial to deploy the app on Heroku, or your local server.
 
+This app is the backend part.
+You can find the front endpart here: https://github.com/bouda19/TWEB_Projet_2018_Front_End
+
 ## Prepare for local environnement
 
 1. Install [mongodb](https://www.mongodb.com/download-center?initial=true#community) and run the following command

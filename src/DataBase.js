@@ -108,7 +108,7 @@ class DataBase {
       avatar: user.avatar,
       followers_count: user.followers_count,
       following_count: user.following_count,
-      number_of_public_repos: user.number_of_public_repos,
+      public_repos_number: user.public_repos_number,
       five_best_repo: user.five_best_repo,
       language_used: user.language_used
     });
