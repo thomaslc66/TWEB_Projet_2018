@@ -32,11 +32,15 @@ describe("Github.test", () => {
   });
 
   describe("Fetch Github", () => {
-    it("Can fetching data from github", () => {
+    it("Can fetching data from github", done => {
       github
         .githubPromise(`${process.env.GITHUB_URL}users/${goodLogin}`)
         .then(result => {
           expect(result.login).to.be.deep.equal(goodLogin);
+          done();
+        })
+        .catch(err => {
+          done(new Error(err));
         });
     });
 
@@ -51,11 +55,15 @@ describe("Github.test", () => {
   });
 
   describe("Fetch Github User", () => {
-    it("Can fetching user from github", () => {
+    it("Can fetching user from github", done => {
       github
         .createUserJSON(`${process.env.GITHUB_URL}users/${goodLogin}`)
         .then(result => {
           expect(result.login).to.be.deep.equal(goodLogin);
+          done();
+        })
+        .catch(err => {
+          done(new Error(err));
         });
     });
 

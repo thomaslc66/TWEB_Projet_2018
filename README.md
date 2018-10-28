@@ -81,6 +81,7 @@ localhost:3000/user/testuser
 This call will return you a Json table with multiple information about 'testuser'.
 
 Exemple of Json response:
+
 ```javascript
   {
     error: 0,
@@ -175,6 +176,7 @@ A simple way to deploy this app is using Heroku.
 4. A good thing to do is: in the package.json file add in the start scirpt (npm install)
 
 Exemple of package.json
+
 ```shell
   "scripts": {
     "start": "node index.js",
@@ -186,6 +188,7 @@ Exemple of package.json
 6. You need to add one by one those env. variables with your personal token
 
 Variable Needed
+
 ```java
 ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'

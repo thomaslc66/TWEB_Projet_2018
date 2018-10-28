@@ -30,13 +30,6 @@ describe("index.test and Route", () => {
   });
 
   describe("Test Routes", () => {
-    it("[/] Should answer to default route", done => {
-      request
-        .get("/")
-        .expect("Content-Type", "text/html; charset=utf-8")
-        .expect(200, done);
-    });
-
     it("Should error 404", done => {
       request
         .get("/qwertz")

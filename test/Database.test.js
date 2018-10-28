@@ -19,7 +19,6 @@ const user = {
   avatar: "https://noavatar.com",
   followers_count: 8,
   following_count: 5,
-  number_of_public_repos: 12,
   five_best_repo: [
     {
       repo_name: "Repo 01",
@@ -107,6 +106,7 @@ describe("Database.test", () => {
             expect(userResult).to.not.be.null();
             delete userResult._id;
             delete userResult.__v;
+            delete userResult.query_date;
             expect(userResult).to.be.deep.equal(user);
             done();
           })
@@ -192,6 +192,7 @@ describe("Database.test", () => {
           .then(userResult => {
             delete userResult._id;
             delete userResult.__v;
+            delete userResult.query_date;
             expect(userResult).to.be.deep.equal(user);
             done();
           })
