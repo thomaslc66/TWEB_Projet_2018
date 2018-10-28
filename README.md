@@ -185,11 +185,16 @@ A simple way to deploy this app is with Heroku.
 6. You need to add one by one those env. variables with your personal token
 
 ```java
-PORT='3000'
 ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'
+DB_NAME='db_name'
+DB_URL='mongodb://url_to_mongo_db'
 NODE_MODE='production'
 ```
+Exemple :
+
+![alt text](http://image.noelshack.com/fichiers/2018/43/7/1540740419-capture.png)
+
 
 7. You can now enable the automatic deploy or deploy the app manualy.
 8. go to your app website and check the app with a user.
