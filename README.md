@@ -27,11 +27,8 @@ Not that the local DB is running on port: 12345.
 
 ```java
 PORT='3000'
-GITHUB_KEY='xxx'
-GITHUB_SECRET='xxx'
 ACCESS_TOKEN='xxx'
 GITHUB_URL='https://api.github.com/'
-GITHUB_USER='xxx'
 NODE_MODE='xxx'
 ```
 
