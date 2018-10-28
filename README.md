@@ -21,14 +21,17 @@ mongod --dbpath=./data/ --port 12345
 Not that the DB il local is running on port: 12345
 You alson need to create a folder named "data" in the root of the directory
 
-2. Create a .env file in the root directory and add the following configuration
+2. Rename the .env.default in the root directory to .env file and edit the following configuration
    (You must install dotenv Visual Studio Code plugin)
 
 ```java
 PORT='3000'
-ACCESS_TOKEN='access_token'
+GITHUB_KEY='xxx'
+GITHUB_SECRET='xxx'
+ACCESS_TOKEN='xxx'
 GITHUB_URL='https://api.github.com/'
-NODE_MODE='developement'
+GITHUB_USER='xxx'
+NODE_MODE='xxx'
 ```
 
 Link to generate a Github Access Token:
@@ -46,7 +49,7 @@ Add this option to VSCode User Setting json
   "eslint.alwaysShowStatus": true,
   "prettier.eslintIntegration": true,
   "prettier.disableLanguages": ["js"],
-  "files.autoSave": "onFocusChange"
+  "files.autoSave": "onFocusChange",
 ```
 
 ## Before first Run of server
@@ -151,7 +154,7 @@ This call will return you a Json table with multiple information.
         count: 2
       },
       {
-        name: "null",
+        name: "unknown",
         count: 2
       }
     ]
@@ -176,7 +179,7 @@ A simple way to deploy this app is with Heroku.
 
 ```shell
   "scripts": {
-    "start": "npm install && node index.js",
+    "start": "node index.js",
     "test": "nyc --reporter=text --reporter=html mocha"
   },
 ```
@@ -191,10 +194,10 @@ DB_NAME='db_name'
 DB_URL='mongodb://url_to_mongo_db'
 NODE_MODE='production'
 ```
+
 Exemple :
 
 ![alt text](http://image.noelshack.com/fichiers/2018/43/7/1540740419-capture.png)
-
 
 7. You can now enable the automatic deploy or deploy the app manualy.
 8. go to your app website and check the app with a user.
