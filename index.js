@@ -1,3 +1,4 @@
+// if for automatic deployement purpose.
 if (process.env.NODE_MODE !== "production") {
   require("dotenv").config({ path: `${__dirname}/.env` });
 }
@@ -10,6 +11,7 @@ const { routes, db } = require("./controllers/Route");
 const app = express();
 const port = process.env.PORT || 3000;
 
+// use cors for front end request compatibility
 app.use(cors());
 
 /********************************************************

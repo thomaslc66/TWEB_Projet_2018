@@ -11,17 +11,19 @@ You can find the front endpart here: https://github.com/bouda19/TWEB_Projet_2018
 
 ## Prepare for local environnement
 
-1. Install [mongodb](https://www.mongodb.com/download-center?initial=true#community) and run the following command
+1. Create a folder named "data" in the root of the directory
+
+2. Install [mongodb](https://www.mongodb.com/download-center?initial=true#community) and run the following command. You need to be in the root of the project otherwise the command wont find the /data/ folder.
    (On Windows you must Add MongoDB binaries to the System PATH "C:\Program Files\MongoDB\Server\4.0\bin" and restart Visual Studio Code)
 
 ```shell
 mongod --dbpath=./data/ --port 12345
 ```
 
-Not that the DB il local is running on port: 12345
-You alson need to create a folder named "data" in the root of the directory
+Not that the local DB is running on port: 12345.
 
-2. Create a .env file in the root directory and add the following configuration
+
+2. Create a .env file in the root directory and add the following configuration. You can see the .env.default file exemple.
    (You must install dotenv Visual Studio Code plugin)
 
 ```java
@@ -51,7 +53,7 @@ Add this option to VSCode User Setting json
 
 ## Before first Run of server
 
-Run this command a terminal to install all dependencies
+3. Run this command on a terminal to install all dependencies.
 
 ```shell
 npm install
@@ -59,19 +61,17 @@ npm install
 
 ## Run server
 
-Then you can run this command in an other terminal
+4. Then you can run this command in an other terminal to start the server.
 
 ```shell
 npm start
 ```
 
-## Backend Node.js Server with use of github API and Mongo DB (local)
-
 #### Api Call
 
 You can use this route to ask for the github info on a user.
 
-1. /user/:username where username is the github login of the one you want to stalk.
+5. /user/:username where username is the github login of the one you want to stalk.
 
 exemple:
 
@@ -79,8 +79,9 @@ exemple:
 localhost:3000/user/testuser
 ```
 
-This call will return you a Json table with multiple information.
+This call will return you a Json table with multiple information about 'testuser'.
 
+Exemple of Json response:
 ```javascript
   {
     error: 0,
@@ -165,15 +166,16 @@ If the cache time (you can change it to suits your needs) is still less than the
 
 Otherwise if the cache time is more, then a new call to the Github API will be made and the user will be updated in the DB.
 
-## Backend Node.js Server with use of github API and Mongo DB (Production)
+## Deployement of Backend Node.js Server with use of github API and Mongo DB (Production)
 
-A simple way to deploy this app is with Heroku.
+A simple way to deploy this app is using Heroku.
 
-1. Fork this github repo
+1. First fork this github repo
 2. Go to Heroku website and register or login in
-3. create a new app in heroku admin panel and link it to your github reop (forked)
+3. Create a new app in heroku admin panel and link it to your github repo (forked)
 4. A good thing to do is: in the package.json file add in the start scirpt (npm install)
 
+Exemple of package.json
 ```shell
   "scripts": {
     "start": "npm install && node index.js",
@@ -181,9 +183,10 @@ A simple way to deploy this app is with Heroku.
   },
 ```
 
-5. go into the app setting. From here you need to set the env variables for your heroku app.
+5. Go into the app setting into heroku. From here you need to set the env variables for your heroku app.
 6. You need to add one by one those env. variables with your personal token
 
+Variable Needed
 ```java
 ACCESS_TOKEN='access_token'
 GITHUB_URL='https://api.github.com/'
@@ -197,4 +200,6 @@ Exemple :
 
 
 7. You can now enable the automatic deploy or deploy the app manualy.
-8. go to your app website and check the app with a user.
+8. Go to your app website and check the app with a user.
+
+Info: To deploy the app in production, you need to have also a prod mongoDB. For this you can use Mlab

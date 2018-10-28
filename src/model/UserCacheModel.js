@@ -7,6 +7,7 @@ let schema = new Schema(
     login: String,
     id: Number
   },
+  //used to delete the _id and _v in mongoose object
   {
     toObject: {
       virtuals: false //don't seems to work at all

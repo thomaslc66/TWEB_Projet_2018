@@ -1,9 +1,9 @@
+// if for deployement on heroku purpose
 if (process.env.NODE_MODE !== "production") {
   require("dotenv").config({ path: `${__dirname}/../.env` });
 }
 
 const routes = require("express").Router();
-
 const Github = require("./../src/Github");
 const DataBase = require("./../src/DataBase");
 
@@ -58,10 +58,6 @@ routes.get("/user/:username", (req, res) => {
       /* istanbul ignore next */
       res.send(client.createErrorJSON());
     });
-});
-
-routes.get("/", (req, resp) => {
-  resp.send("{}");
 });
 
 module.exports = {

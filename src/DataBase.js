@@ -7,20 +7,26 @@ const Mongoose = require("mongoose");
 // To Avoid findAndModify is deprecated
 Mongoose.set("useFindAndModify", false);
 
-const CACHE_TIME = process.env.NODE_MODE === "test" ? 5 : 100;
+//change this value if you want more or less time in cache
+const TIME_IN_CACHE = 1000;
+const CACHE_TIME = process.env.NODE_MODE === "test" ? 5 : TIME_IN_CACHE;
 
 const User = require("./model/UserModel");
 const CacheUser = require("./model/UserCacheModel");
 
-/**
+/***************************************************************************************************
+ * 
  * @class DataBase
  * @description DataBase class is the class that is used to connect and manage the mongoDB DataBase
- */
+ * 
+ ***************************************************************************************************/
 class DataBase {
-  /**
+  /*****************************************************
+   * 
    * @constructor - constructor of the DataBase Class
    * @description - object constructor
-   */
+   * 
+   ****************************************************/
   constructor({} = {}) {
     this.dbName = process.env.DB_NAME;
     this.dbUrl =
@@ -30,6 +36,7 @@ class DataBase {
     this.db;
   }
 
+  // initialize db connection
   connect(done) {
     Mongoose.connect(
       `${this.dbUrl}/${this.dbName}`,
@@ -47,7 +54,7 @@ class DataBase {
     // Difficult to test
     /* istanbul ignore next */
     this.db.on("error", () => {
-      console.error.bind(console, "connection error: ");
+      console.error.bind(console, "Connection error: ");
       this.close();
     });
     this.db.once("open", () => {
@@ -66,10 +73,22 @@ class DataBase {
     return (new Date() - queryDate) / 1000;
   }
 
+  /**************************************************************
+   *
+   * @function close()
+   * @description use for test purpose to close the connection
+   *
+   *************************************************************/
   close(done) {
     this.db.close(done);
   }
 
+  /**************************************************************
+   *
+   * @function clear()
+   * @description clear the database - for test purpose
+   *
+   *************************************************************/
   clear(done) {
     this.db.dropDatabase(done);
   }
@@ -83,7 +102,8 @@ class DataBase {
   saveInDB(value, done) {
     return value.save(err => {
       if (err) throw err.message;
-      console.log("Value saved");
+      console.log("Value saved in DB");
+      // for test purpose
       if (typeof done === "function") done();
     });
   }
@@ -138,7 +158,7 @@ class DataBase {
           return null;
         } else {
           //user is in DB, return the cachedUser store in DB
-          return cachedUser.toObject({ virtuals: false });
+          return cachedUser.toObject();
         }
       })
       .catch(error => {
@@ -171,7 +191,7 @@ class DataBase {
         let time = this.delay(cachedUser.query_date);
         console.log(`${time} seconds since last query`);
 
-        if (time < CACHE_TIME) {
+        if (time < CACHE_TIME) { //change cache time to desired value
           //user in cache is still fresh
           console.log(`Cache still fresh`);
           return this.getUser(login);
@@ -239,6 +259,7 @@ class DataBase {
               if (err) {
                 console.log(`Error during cache update ${err.message}`);
               }
+              // for test purpose
               if (typeof done === "function") done();
             }
           );
