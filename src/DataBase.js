@@ -96,6 +96,8 @@ class DataBase {
    *************************************************************/
   insertUser(user, done) {
     const dbUser = new User({
+      error: user.error,
+      query_date: user.query_date,
       type: user.type,
       id: user.id,
       creation_date: user.creation_date,

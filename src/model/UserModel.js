@@ -3,6 +3,8 @@ const Schema = mongoose.Schema;
 
 let schema = new Schema(
   {
+    error: Number,
+    query_date: { type: Date, default: Date.now, required: false },
     type: String,
     id: Number,
     creation_date: String,
@@ -22,7 +24,7 @@ let schema = new Schema(
       virtuals: false
     },
     toJSON : { 
-      virtuals: false
+      virtuals: false //don't seems to work at all
     }
   }
 );
